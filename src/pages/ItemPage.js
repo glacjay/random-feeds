@@ -38,6 +38,16 @@ export default observer(function ItemPage(props) {
     loadFeeds();
   }, [token, itemId, state]);
 
+  const markAsRead = async () => {
+    try {
+      await api2.post('?api', { api_key: token, mark: 'item', as: 'read', id: state.item?.id });
+      props.history.goBack();
+    } catch (ex) {
+      console.warn('ItemPage.markAsRead error:', ex);
+      toast(`mark item as read failed: ${ex}`);
+    }
+  };
+
   return (
     <div className="flex-column">
       <a
@@ -66,8 +76,12 @@ export default observer(function ItemPage(props) {
         className="flex-row"
         style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 7, height: 50 }}
       >
-        <button style={{ flex: 1 }}>mark as read</button>
-        <button style={{ flex: 1 }}>return</button>
+        <button onClick={markAsRead} style={{ flex: 1 }}>
+          mark as read
+        </button>
+        <button onClick={() => props.history.goBack()} style={{ flex: 1 }}>
+          return
+        </button>
       </div>
     </div>
   );
