@@ -34,16 +34,20 @@
   },
   "dependencies": {
     "axios": "^0.20.0",
+    "dayjs": "^1.9.1",
+    "md5": "^2.3.0",
     "mobx": "^6.0.0",
     "mobx-react": "^7.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.3"
+    "react-scripts": "3.4.3",
+    "react-toastify": "^6.0.8",
+    "styled-components": "^5.2.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.10.0",
+    "eslint": "^6.6.0",
     "eslint-config-react-app": "^5.2.1",
     "eslint-plugin-flowtype": "^5.2.0",
     "eslint-plugin-import": "^2.22.1",
