@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/static/css/main.ddd24525.chunk.css",
-    "main.js": "/static/js/main.764916d8.chunk.js",
-    "main.js.map": "/static/js/main.764916d8.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.2cc9f158.js",
-    "runtime-main.js.map": "/static/js/runtime-main.2cc9f158.js.map",
-    "static/css/2.3a221eca.chunk.css": "/static/css/2.3a221eca.chunk.css",
-    "static/js/2.6fda7216.chunk.js": "/static/js/2.6fda7216.chunk.js",
-    "static/js/2.6fda7216.chunk.js.map": "/static/js/2.6fda7216.chunk.js.map",
-    "index.html": "/index.html",
-    "precache-manifest.4ed991174b91c581abd994925af7aa62.js": "/precache-manifest.4ed991174b91c581abd994925af7aa62.js",
-    "service-worker.js": "/service-worker.js",
-    "static/css/2.3a221eca.chunk.css.map": "/static/css/2.3a221eca.chunk.css.map",
-    "static/css/main.ddd24525.chunk.css.map": "/static/css/main.ddd24525.chunk.css.map",
-    "static/js/2.6fda7216.chunk.js.LICENSE.txt": "/static/js/2.6fda7216.chunk.js.LICENSE.txt"
+    "main.css": "/random-feeds/static/css/main.ddd24525.chunk.css",
+    "main.js": "/random-feeds/static/js/main.33c1a362.chunk.js",
+    "main.js.map": "/random-feeds/static/js/main.33c1a362.chunk.js.map",
+    "runtime-main.js": "/random-feeds/static/js/runtime-main.f10e9d71.js",
+    "runtime-main.js.map": "/random-feeds/static/js/runtime-main.f10e9d71.js.map",
+    "static/css/2.3a221eca.chunk.css": "/random-feeds/static/css/2.3a221eca.chunk.css",
+    "static/js/2.6fda7216.chunk.js": "/random-feeds/static/js/2.6fda7216.chunk.js",
+    "static/js/2.6fda7216.chunk.js.map": "/random-feeds/static/js/2.6fda7216.chunk.js.map",
+    "index.html": "/random-feeds/index.html",
+    "precache-manifest.3cb7d6c9c4aba19757bb17431ba4efc2.js": "/random-feeds/precache-manifest.3cb7d6c9c4aba19757bb17431ba4efc2.js",
+    "service-worker.js": "/random-feeds/service-worker.js",
+    "static/css/2.3a221eca.chunk.css.map": "/random-feeds/static/css/2.3a221eca.chunk.css.map",
+    "static/css/main.ddd24525.chunk.css.map": "/random-feeds/static/css/main.ddd24525.chunk.css.map",
+    "static/js/2.6fda7216.chunk.js.LICENSE.txt": "/random-feeds/static/js/2.6fda7216.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.2cc9f158.js",
+    "static/js/runtime-main.f10e9d71.js",
     "static/css/2.3a221eca.chunk.css",
     "static/js/2.6fda7216.chunk.js",
     "static/css/main.ddd24525.chunk.css",
-    "static/js/main.764916d8.chunk.js"
+    "static/js/main.33c1a362.chunk.js"
   ]
 }
