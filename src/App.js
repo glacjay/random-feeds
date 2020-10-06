@@ -63,7 +63,7 @@ export default observer(function App() {
         bodyClassName="toast-body"
       />
 
-      <BrowserRouter>
+      <BrowserRouter basename="/random-feeds">
         <Switch>
           <Route path="/Group/:groupId" component={require('src/pages/GroupPage').default} />
           <Route path="/Item/:itemId" component={require('src/pages/ItemPage').default} />
