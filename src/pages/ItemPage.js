@@ -79,7 +79,7 @@ export default observer(function ItemPage(props) {
         <button
           onClick={async () => {
             setIsSubmitting(true);
-            if (await rootStore.markItemAsRead(item?.id)) {
+            if (await rootStore.markItemsAsRead([item?.id])) {
               props.history.goBack();
             }
             setIsSubmitting(false);

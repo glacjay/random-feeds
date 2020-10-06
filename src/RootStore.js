@@ -133,42 +133,34 @@ export default class RootStore {
     }
   }
 
-  *markItemAsRead(itemId) {
+  *markItemsAsRead(itemIds) {
     try {
-      if (!this.token || !itemId) {
+      if (!this.token || !(itemIds?.length > 0)) {
         return false;
       }
 
-      yield api2.post('/reader/api/0/edit-tag', { i: itemId, a: 'user/-/state/com.google/read' });
+      yield api2.post(`/reader/api/0/edit-tag?${itemIds.map((id) => `i=${id}`).join('&')}`, {
+        a: 'user/-/state/com.google/read',
+      });
 
-      yield this.removeItem(itemId, 'items');
-      yield this.removeItem(itemId, 'randomItems');
+      yield this.removeItem(itemIds, 'items');
+      yield this.removeItem(itemIds, 'randomItems');
+      this.randomItems = this.randomItems?.filter((item) => !itemIds.includes(item.id));
 
-      this.randomItems = this.randomItems?.filter((item) => item.id !== itemId);
       return true;
     } catch (ex) {
-      console.warn('RootStore.markItemAsRead error:', ex);
+      console.warn('RootStore.markItemsAsRead error:', ex);
       toast(`mark item as read error: ${ex}`);
       return false;
     }
   }
 
-  *removeItem(itemId, field) {
+  *removeItem(itemIds, field) {
     for (const folder of this.folders || []) {
-      if (folder[field]?.some((item) => item.id === itemId)) {
-        folder[field] = folder[field].filter((item) => item.id !== itemId);
+      if (folder[field]?.some((item) => itemIds.includes(item.id))) {
+        folder[field] = folder[field].filter((item) => !itemIds.includes(item.id));
         yield localStorage.setItem(`${field}:${folder.id}`, JSON.stringify(folder[field]));
       }
-    }
-  }
-
-  *markFolderAsRead(folderId) {
-    const folder = this.folders.find((f) => f.id === folderId);
-    if (folder) {
-      for (const item of folder.randomItems || []) {
-        yield this.markItemAsRead(item.id);
-      }
-      yield this.loadItems({ folderId });
     }
   }
 }

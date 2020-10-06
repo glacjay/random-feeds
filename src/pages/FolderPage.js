@@ -58,7 +58,8 @@ export default observer(function GroupPage(props) {
         <button
           onClick={async () => {
             setIsSubmitting(true);
-            rootStore.markFolderAsRead(folderId);
+            await rootStore.markItemsAsRead(folder.randomItems.map((item) => item.id));
+            await rootStore.loadItems({ folderId });
             setIsSubmitting(false);
           }}
           disabled={isSubmitting}
