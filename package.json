@@ -37,6 +37,7 @@
   "dependencies": {
     "axios": "^0.20.0",
     "dayjs": "^1.9.1",
+    "html-to-react": "^1.4.4",
     "md5": "^2.3.0",
     "mobx": "6.0.1",
     "mobx-react": "^7.0.0",

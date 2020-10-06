@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import HtmlToReact, { Parser as HtmlToReactParser } from 'html-to-react';
 import { observer } from 'mobx-react';
 import qs from 'qs';
 import React from 'react';
@@ -12,6 +13,35 @@ export default observer(function ItemPage(props) {
   const item = rootStore.randomItems?.find((item) => item.id === itemId);
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  let contentElement = null;
+  if (item?.summary?.content) {
+    const preprocessingInstructions = [
+      {
+        shouldPreprocessNode: (node) => node.name === 'img',
+        preprocessNode: (node) => {
+          node.attribs = {
+            ...node.attribs,
+            style: `${node.attribs?.style}; max-width: 100%;`,
+          };
+        },
+      },
+    ];
+    const processNodeDefinitions = new HtmlToReact.ProcessNodeDefinitions(React);
+    const processingInstructions = [
+      {
+        shouldProcessNode: (node) => true,
+        processNode: processNodeDefinitions.processDefaultNode,
+      },
+    ];
+    const parser = new HtmlToReactParser();
+    contentElement = parser.parseWithInstructions(
+      item.summary.content,
+      () => true,
+      processingInstructions,
+      preprocessingInstructions,
+    );
+  }
 
   return (
     <div className="flex-column">
@@ -37,10 +67,9 @@ export default observer(function ItemPage(props) {
         </div>
       </a>
 
-      <div
-        dangerouslySetInnerHTML={{ __html: item?.summary?.content }}
-        style={{ maxWidth: '100vw' }}
-      />
+      <div style={{ margin: 8 }}>
+        {contentElement || <div dangerouslySetInnerHTML={{ __html: item?.summary?.content }} />}
+      </div>
 
       <div style={{ height: 50 }} />
       <div
