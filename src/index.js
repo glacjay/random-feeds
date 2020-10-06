@@ -1,15 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { GlobalStore, GlobalStoreContext } from 'src/utils/globalStore';
+import RootStore, { RootStoreContext } from 'src/RootStore';
 import App from './App';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
-    <GlobalStoreContext.Provider value={new GlobalStore()}>
+    <RootStoreContext.Provider value={new RootStore()}>
       <App />
-    </GlobalStoreContext.Provider>
+    </RootStoreContext.Provider>
   </React.StrictMode>,
   document.getElementById('root'),
 );

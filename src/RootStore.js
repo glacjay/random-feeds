@@ -1,0 +1,180 @@
+import * as mobx from 'mobx';
+import React from 'react';
+import { toast } from 'react-toastify';
+import api2 from 'src/utils/api2';
+
+export default class RootStore {
+  token = null;
+
+  folders = null;
+  randomItems = null;
+
+  constructor() {
+    mobx.makeAutoObservable(this);
+  }
+
+  loadToken(token) {
+    this.token = token;
+    api2.token = token;
+  }
+
+  *login(account, password) {
+    try {
+      const result = yield api2.post('/accounts/ClientLogin', { Email: account, Passwd: password });
+      const json = {};
+      result
+        .split('\n')
+        .filter((l) => l)
+        .forEach((line) => {
+          const idx = line.indexOf('=');
+          if (idx > 0) {
+            json[line.substr(0, idx)] = line.substr(idx + 1);
+          } else {
+            json[line] = true;
+          }
+        });
+      if (!json.Auth) {
+        throw new Error('account or password incorrect');
+      }
+
+      this.token = json.Auth;
+      yield localStorage.setItem('token', this.token);
+      api2.token = this.token;
+      return true;
+    } catch (ex) {
+      console.warn('RootStore.login error:', ex);
+      toast(`login failed: ${ex}`);
+      return false;
+    }
+  }
+
+  *loadFolders() {
+    try {
+      if (!this.token) {
+        return;
+      }
+
+      const result = yield api2.get('/reader/api/0/tag/list?output=json');
+      this.folders = result.tags.filter((tag) => /\/label\//.test(tag.id));
+    } catch (ex) {
+      console.warn('RootStore.loadFolders error:', ex);
+      toast(`load folders error: ${ex}`);
+    }
+  }
+
+  *loadItems({ folderId, reloadItems, reloadRandomItems }) {
+    try {
+      if (!this.token || !folderId) {
+        return;
+      }
+      if (!this.folders) {
+        yield this.loadFolders();
+      }
+      const folder = this.folders?.find((f) => f.id === folderId);
+      if (!folder) {
+        return;
+      }
+
+      if (reloadItems) {
+        folder.items = null;
+      }
+      if (reloadItems || reloadRandomItems) {
+        folder.randomItems = null;
+      }
+
+      let { items } = folder;
+      if (!(items?.length > 0) && !reloadItems) {
+        const itemsStr = yield localStorage.getItem('items:' + folderId);
+        if (itemsStr) {
+          items = JSON.parse(itemsStr);
+          folder.items = items;
+        }
+      }
+      if (!(items?.length > 0) || reloadItems) {
+        items = (yield api2.get('/reader/api/0/stream/items/ids', {
+          output: 'json',
+          s: folderId,
+          xt: 'user/-/state/com.google/read',
+          r: 'o',
+          n: 10000,
+        })).itemRefs;
+        folder.items = items;
+        yield localStorage.setItem('items:' + folderId, JSON.stringify(items));
+      }
+
+      let { randomItems } = folder;
+      if (!(randomItems?.length > 0) && !reloadRandomItems) {
+        const randomItemsStr = yield localStorage.getItem('randomItems:' + folderId);
+        if (randomItemsStr) {
+          randomItems = JSON.parse(randomItemsStr);
+          folder.randomItems = randomItems;
+        }
+      }
+      if (!(randomItems?.length > 0) || reloadItems || reloadRandomItems) {
+        const indics = Array.from(
+          new Set(
+            Array(7)
+              .fill()
+              .map(() => parseInt(Math.random() * items.length)),
+          ),
+        );
+        randomItems = (yield api2.get(
+          `/reader/api/0/stream/items/contents?output=json${indics
+            .map((idx) => `&i=${items[idx].id}`)
+            .join('')}`,
+        )).items.map((item, idx) => ({ ...item, id: items[idx].id }));
+        folder.randomItems = randomItems;
+        yield localStorage.setItem('randomItems:' + folderId, JSON.stringify(randomItems));
+      }
+      this.randomItems = randomItems;
+    } catch (ex) {
+      console.warn('RootStore.loadItems error:', ex);
+      toast(`load items error: ${ex}`);
+    }
+  }
+
+  *markItemAsRead(itemId) {
+    try {
+      if (!this.token || !itemId) {
+        return false;
+      }
+
+      yield api2.post('/reader/api/0/edit-tag', { i: itemId, a: 'user/-/state/com.google/read' });
+
+      yield this.removeItem(itemId, 'items');
+      yield this.removeItem(itemId, 'randomItems');
+
+      this.randomItems = this.randomItems?.filter((item) => item.id !== itemId);
+      return true;
+    } catch (ex) {
+      console.warn('RootStore.markItemAsRead error:', ex);
+      toast(`mark item as read error: ${ex}`);
+      return false;
+    }
+  }
+
+  *removeItem(itemId, field) {
+    for (const folder of this.folders || []) {
+      if (folder[field]?.some((item) => item.id === itemId)) {
+        folder[field] = folder[field].filter((item) => item.id !== itemId);
+        yield localStorage.setItem(`${field}:${folder.id}`, JSON.stringify(folder[field]));
+      }
+    }
+  }
+
+  *markFolderAsRead(folderId) {
+    const folder = this.folders.find((f) => f.id === folderId);
+    if (folder) {
+      for (const item of folder.randomItems || []) {
+        yield this.markItemAsRead(item.id);
+      }
+      yield this.loadItems({ folderId });
+    }
+  }
+}
+
+export const RootStoreContext = React.createContext(null);
+
+export function useRootStore() {
+  return React.useContext(RootStoreContext);
+}

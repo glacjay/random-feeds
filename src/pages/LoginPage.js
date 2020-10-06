@@ -1,37 +1,15 @@
-import md5 from 'md5';
-import * as mobx from 'mobx';
-import { observer, useLocalObservable } from 'mobx-react';
+import { observer } from 'mobx-react';
 import React from 'react';
-import { toast } from 'react-toastify';
-import api2 from 'src/utils/api2';
-import useGlobalStore from 'src/utils/globalStore';
+import { useRootStore } from 'src/RootStore';
 
 export default observer(function LoginPage(props) {
-  const globalStore = useGlobalStore();
+  const rootStore = useRootStore();
 
-  const state = useLocalObservable(() => ({
+  const [state, setState] = React.useState({
     account: null,
     password: null,
     isSubmitting: false,
-
-    *login() {
-      try {
-        state.isSubmitting = true;
-        const token = md5(`${state.account}:${state.password}`);
-        const result = yield api2.post('?api', { api_key: token });
-        if (!result.auth) {
-          toast('auth failed');
-          return;
-        }
-        globalStore.setToken(token);
-        yield localStorage.setItem('token', token);
-        props.history.goBack();
-      } catch (ex) {
-      } finally {
-        state.isSubmitting = false;
-      }
-    },
-  }));
+  });
 
   return (
     <div
@@ -46,17 +24,23 @@ export default observer(function LoginPage(props) {
       <div>account</div>
       <input
         value={state.account ?? ''}
-        onChange={mobx.action((e) => (state.account = e.target.value || null))}
+        onChange={(e) => setState({ ...state, account: e.target.value || null })}
       />
 
       <div>password</div>
       <input
         value={state.password ?? ''}
-        onChange={mobx.action((e) => (state.password = e.target.value || null))}
+        onChange={(e) => setState({ ...state, password: e.target.value || null })}
       />
 
       <button
-        onClick={state.login}
+        onClick={async () => {
+          setState({ ...state, isSubmitting: true });
+          if (await rootStore.login(state.account, state.password)) {
+            props.history.goBack();
+          }
+          setState({ ...state, isSubmitting: false });
+        }}
         disabled={state.isSubmitting}
         style={{ gridColumn: '1 / span 2', padding: 8, fontSize: 14 }}
       >

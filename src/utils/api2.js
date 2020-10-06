@@ -1,29 +1,31 @@
 import axios from 'axios';
 import qs from 'qs';
 
+const api2 = {};
+
 let api = axios.create({
   baseURL: 'https://fever.glacjay.info',
   timeout: 30000,
-  headers: {
-    Accept: 'application/json; charset=UTF-8',
-  },
 });
-
-const api2 = {};
 
 api2.request = async (method, url, args, options) => {
   try {
     const actualArgs = {
       ...args,
     };
+    const headers = {
+      ...(api2.token ? { Authorization: `GoogleLogin auth=${api2.token}` } : {}),
+    };
     const result = (
-      await api[method](url, method === 'post' ? qs.stringify(actualArgs) : { params: actualArgs })
+      await api.request({
+        method,
+        url,
+        ...(method === 'post' ? { data: qs.stringify(actualArgs) } : { params: actualArgs }),
+        headers,
+      })
     ).data;
     if (options?.log !== false) {
       console.log(method.toUpperCase(), url, args, result);
-    }
-    if (!result?.auth) {
-      throw new Error('auth failed');
     }
     return result;
   } catch (error) {
