@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [14.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -28,4 +28,9 @@ jobs:
       uses: CultureHQ/actions-yarn@v1.0.1
     - run: yarn
     - run: yarn build
-    - run: yarn deploy
+    - name: GH Pages deploy
+      uses: Cecilapp/GitHub-Pages-deploy@2.0.1
+      env:
+        EMAIL: glacjay@gmail.com
+        GH_TOKEN: ${{ secrets.GH_ACTIONS_KEY }}
+        BUILD_DIR: build
