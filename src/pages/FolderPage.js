@@ -31,7 +31,9 @@ export default observer(function GroupPage(props) {
             className="flex-row align-center"
             style={{ marginTop: 8, justifyContent: 'space-between', fontSize: 12, color: 'gray' }}
           >
-            <div>{item.origin.title}</div>
+            <div>
+              {item.origin.title} | {item.author}
+            </div>
             <div>{dayjs(item.updated * 1000).format('YYYY-MM-DD HH:mm')}</div>
           </div>
         </Link>
