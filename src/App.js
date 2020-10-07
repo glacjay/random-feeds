@@ -37,7 +37,7 @@ export default observer(function App() {
         bodyClassName="toast-body"
       />
 
-      <HashRouter basename="/random-feeds">
+      <HashRouter>
         <Switch>
           <Route path="/Folder" component={require('src/pages/FolderPage').default} />
           <Route path="/Item" component={require('src/pages/ItemPage').default} />
