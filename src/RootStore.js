@@ -5,9 +5,7 @@ import api2 from 'src/utils/api2';
 
 export default class RootStore {
   token = null;
-
   folders = null;
-  randomItems = null;
 
   constructor() {
     mobx.makeAutoObservable(this);
@@ -126,7 +124,6 @@ export default class RootStore {
         folder.randomItems = randomItems;
         yield localStorage.setItem('randomItems:' + folderId, JSON.stringify(randomItems));
       }
-      this.randomItems = randomItems;
     } catch (ex) {
       console.warn('RootStore.loadItems error:', ex);
       toast(`load items error: ${ex}`);
@@ -145,7 +142,6 @@ export default class RootStore {
 
       yield this.removeItem(itemIds, 'items');
       yield this.removeItem(itemIds, 'randomItems');
-      this.randomItems = this.randomItems?.filter((item) => !itemIds.includes(item.id));
 
       return true;
     } catch (ex) {

@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import React from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Switch } from 'react-router-dom';
 import { cssTransition, ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
@@ -37,7 +37,7 @@ export default observer(function App() {
         bodyClassName="toast-body"
       />
 
-      <BrowserRouter basename="/random-feeds">
+      <HashRouter basename="/random-feeds">
         <Switch>
           <Route path="/Folder" component={require('src/pages/FolderPage').default} />
           <Route path="/Item" component={require('src/pages/ItemPage').default} />
@@ -45,7 +45,7 @@ export default observer(function App() {
           <Route path="/Login" component={require('src/pages/LoginPage').default} />
           <Route path="/" component={require('src/pages/IndexPage').default} />
         </Switch>
-      </BrowserRouter>
+      </HashRouter>
     </div>
   );
 });

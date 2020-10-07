@@ -23,7 +23,7 @@ export default observer(function GroupPage(props) {
       {folder?.randomItems?.map((item) => (
         <Link
           key={item.id}
-          to={`/Item?id=${item.id}`}
+          to={`/Item?folderId=${folderId}&id=${item.id}`}
           style={{ margin: 8, border: '1px solid black', padding: 16 }}
         >
           <div>{item.title}</div>

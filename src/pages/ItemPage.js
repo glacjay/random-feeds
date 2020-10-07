@@ -9,8 +9,14 @@ export default observer(function ItemPage(props) {
   const rootStore = useRootStore();
 
   const query = qs.parse(props.location.search.slice(1));
-  const { id: itemId } = query;
-  const item = rootStore.randomItems?.find((item) => item.id === itemId);
+  const { folderId, id: itemId } = query;
+
+  React.useEffect(() => {
+    rootStore.loadItems({ folderId });
+  }, [rootStore, rootStore.token, folderId]);
+
+  const folder = rootStore.folders?.find((f) => f.id === folderId);
+  const item = folder?.randomItems?.find((item) => item.id === itemId);
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
