@@ -28,7 +28,7 @@ export default observer(function ItemPage(props) {
         preprocessNode: (node) => {
           node.attribs = {
             ...node.attribs,
-            style: `${node.attribs?.style}; max-width: 100%;`,
+            style: `${node.attribs?.style}; max-width: 100%; height: auto;`,
           };
         },
       },
