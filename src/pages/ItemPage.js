@@ -95,6 +95,15 @@ export default observer(function ItemPage(props) {
         >
           mark as read
         </button>
+        <a
+          href={item?.canonical?.[0]?.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-row justify-center align-center"
+          style={{ flex: 1, border: '1px solid lightgray', borderRadius: 4 }}
+        >
+          original link
+        </a>
         <button onClick={() => props.history.goBack()} disabled={isSubmitting} style={{ flex: 1 }}>
           return
         </button>
