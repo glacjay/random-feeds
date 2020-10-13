@@ -19,12 +19,18 @@ export default observer(function GroupPage(props) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   return (
-    <div className="flex-column">
+    <div className="flex-column" style={{ paddingBottom: 4 }}>
       {folder?.randomItems?.map((item) => (
         <Link
           key={item.id}
           to={`/Item?folderId=${folderId}&id=${item.id}`}
-          style={{ margin: 8, border: '1px solid black', padding: 16 }}
+          style={{
+            margin: 4,
+            marginBottom: 0,
+            border: '1px solid black',
+            borderRadius: 4,
+            padding: 8,
+          }}
         >
           <div>{item.title}</div>
           <div
