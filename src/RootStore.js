@@ -140,8 +140,8 @@ export default class RootStore {
         a: 'user/-/state/com.google/read',
       });
 
-      yield this.removeItem(itemIds, 'items');
-      yield this.removeItem(itemIds, 'randomItems');
+      yield this.removeItems(itemIds, 'items');
+      yield this.removeItems(itemIds, 'randomItems');
 
       return true;
     } catch (ex) {
@@ -151,7 +151,7 @@ export default class RootStore {
     }
   }
 
-  *removeItem(itemIds, field) {
+  *removeItems(itemIds, field) {
     for (const folder of this.folders || []) {
       if (folder[field]?.some((item) => itemIds.includes(item.id))) {
         folder[field] = folder[field].filter((item) => !itemIds.includes(item.id));

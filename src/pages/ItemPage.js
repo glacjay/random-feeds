@@ -119,8 +119,15 @@ export default observer(function ItemPage(props) {
         >
           original link
         </a>
-        <button onClick={() => props.history.goBack()} disabled={isSubmitting} style={{ flex: 1 }}>
-          return
+        <button
+          onClick={() => {
+            rootStore.removeItems([itemId], 'randomItems');
+            props.history.goBack();
+          }}
+          disabled={isSubmitting}
+          style={{ flex: 1 }}
+        >
+          later
         </button>
       </div>
     </div>
