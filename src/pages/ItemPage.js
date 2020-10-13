@@ -28,7 +28,22 @@ export default observer(function ItemPage(props) {
         preprocessNode: (node) => {
           node.attribs = {
             ...node.attribs,
-            style: `${node.attribs?.style}; max-width: 100%; height: auto;`,
+            style: `${node.attribs?.style || ''} max-width: 100%; height: auto;`,
+          };
+        },
+      },
+      {
+        shouldPreprocessNode: (node) => node.name === 'pre',
+        preprocessNode: (node) => {
+          node.attribs = {
+            ...node.attribs,
+            style: `${node.attribs?.style || ''}
+              border: 1px solid lightgray;
+              padding: 2px;
+              overflow-x: auto;
+              white-space: pre;
+              font-size: 0.8rem;
+            `,
           };
         },
       },
