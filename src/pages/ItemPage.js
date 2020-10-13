@@ -100,7 +100,7 @@ export default observer(function ItemPage(props) {
           target="_blank"
           rel="noopener noreferrer"
           className="flex-row justify-center align-center"
-          style={{ flex: 1, border: '1px solid lightgray', borderRadius: 4 }}
+          style={{ flex: 1, border: '1px solid lightgray', borderRadius: 4, background: 'white' }}
         >
           original link
         </a>
