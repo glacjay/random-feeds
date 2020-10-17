@@ -20,13 +20,15 @@ export default observer(function IndexPage(props) {
 
   return (
     <div className="flex-column">
+      <div style={{ margin: '4px 4px 0' }}>未读：{rootStore.totalUnreadCounts}</div>
+
       {rootStore.folders?.map((folder) => (
         <Link
           key={folder.id}
           to={`/Folder?id=${folder.id}`}
-          style={{ margin: 8, border: '1px solid black', padding: 16 }}
+          style={{ margin: '4px 4px 0', border: '1px solid black', borderRadius: 4, padding: 8 }}
         >
-          {folder.id}
+          {folder.id} ({folder.unreadCount})
         </Link>
       ))}
     </div>

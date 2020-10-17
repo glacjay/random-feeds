@@ -52,8 +52,20 @@ export default class RootStore {
         return;
       }
 
-      const result = yield api2.get('/reader/api/0/tag/list?output=json');
-      this.folders = result.tags.filter((tag) => /\/label\//.test(tag.id));
+      this.folders = (yield api2.get('/reader/api/0/tag/list?output=json')).tags.filter((tag) =>
+        /\/label\//.test(tag.id),
+      );
+
+      const result = yield api2.get('/reader/api/0/unread-count?output=json');
+      this.totalUnreadCounts = result.bq_total_unreads;
+      const unreadCounts = result.unreadcounts;
+      for (const folder of this.folders) {
+        const folderId = folder.id?.replace(/\d+/, '-');
+        const count = unreadCounts.find((c) => c.id === folderId);
+        if (count) {
+          folder.unreadCount = count.count;
+        }
+      }
     } catch (ex) {
       console.warn('RootStore.loadFolders error:', ex);
       toast(`load folders error: ${ex}`);
