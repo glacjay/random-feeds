@@ -11,7 +11,9 @@ export default function ItemActions(props) {
         onClick={async () => {
           setIsSubmitting(true);
           if (await rootStore.markItemsAsRead([item?.id])) {
-            const _ = props.history?.goBack();
+            if (props.history?.goBack) {
+              props.history.goBack();
+            }
           }
           setIsSubmitting(false);
         }}
@@ -37,7 +39,9 @@ export default function ItemActions(props) {
       <button
         onClick={() => {
           rootStore.removeItems([item?.id], 'randomItems');
-          const _ = props.history?.goBack();
+          if (props.history?.goBack) {
+            props.history.goBack();
+          }
         }}
         disabled={isSubmitting}
         style={{ ...props.buttonStyle }}
