@@ -18,7 +18,7 @@ export default function ItemActions(props) {
           setIsSubmitting(false);
         }}
         disabled={isSubmitting}
-        style={{ ...props.buttonStyle }}
+        style={{ padding: '4px 8px', ...props.buttonStyle }}
       >
         mark as read
       </button>
@@ -31,6 +31,7 @@ export default function ItemActions(props) {
           border: '1px solid lightgray',
           borderRadius: 4,
           background: 'white',
+          padding: '4px 8px',
           ...props.buttonStyle,
         }}
       >
@@ -44,7 +45,7 @@ export default function ItemActions(props) {
           }
         }}
         disabled={isSubmitting}
-        style={{ ...props.buttonStyle }}
+        style={{ padding: '4px 8px', ...props.buttonStyle }}
       >
         later
       </button>
