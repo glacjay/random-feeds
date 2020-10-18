@@ -20,7 +20,9 @@ export default observer(function GroupPage(props) {
 
   return (
     <div className="flex-column" style={{ paddingBottom: 4 }}>
-      <div style={{ margin: '4px 4px 0' }}>未读：{folder?.unreadCount}</div>
+      <div style={{ margin: '4px 4px 0' }}>
+        {folder.id}：{folder?.unreadCount}
+      </div>
 
       {folder?.randomItems?.map((item) => (
         <Link
