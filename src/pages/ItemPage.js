@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import qs from 'qs';
 import React from 'react';
 import { useRootStore } from 'src/RootStore';
+import ItemActions from 'src/widgets/ItemActions';
 
 export default observer(function ItemPage(props) {
   const rootStore = useRootStore();
@@ -28,7 +29,7 @@ export default observer(function ItemPage(props) {
         preprocessNode: (node) => {
           node.attribs = {
             ...node.attribs,
-            style: `${node.attribs?.style || ''} max-width: 100%; height: auto;`,
+            style: `${node.attribs?.style || ''}; max-width: 100%; height: auto;`,
           };
         },
       },
@@ -37,7 +38,7 @@ export default observer(function ItemPage(props) {
         preprocessNode: (node) => {
           node.attribs = {
             ...node.attribs,
-            style: `${node.attribs?.style || ''}
+            style: `${node.attribs?.style || ''};
               border: 1px solid lightgray;
               padding: 2px;
               overflow-x: auto;
@@ -97,38 +98,13 @@ export default observer(function ItemPage(props) {
         className="flex-row"
         style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 7, height: 50 }}
       >
-        <button
-          onClick={async () => {
-            setIsSubmitting(true);
-            if (await rootStore.markItemsAsRead([item?.id])) {
-              props.history.goBack();
-            }
-            setIsSubmitting(false);
-          }}
-          disabled={isSubmitting}
-          style={{ flex: 1 }}
-        >
-          mark as read
-        </button>
-        <a
-          href={item?.canonical?.[0]?.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-row justify-center align-center"
-          style={{ flex: 1, border: '1px solid lightgray', borderRadius: 4, background: 'white' }}
-        >
-          original link
-        </a>
-        <button
-          onClick={() => {
-            rootStore.removeItems([itemId], 'randomItems');
-            props.history.goBack();
-          }}
-          disabled={isSubmitting}
-          style={{ flex: 1 }}
-        >
-          later
-        </button>
+        <ItemActions
+          item={item}
+          history={props.history}
+          isSubmitting={isSubmitting}
+          setIsSubmitting={setIsSubmitting}
+          buttonStyle={{ flex: 1 }}
+        />
       </div>
     </div>
   );

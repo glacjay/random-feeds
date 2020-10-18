@@ -4,6 +4,7 @@ import qs from 'qs';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRootStore } from 'src/RootStore';
+import ItemActions from 'src/widgets/ItemActions';
 
 export default observer(function GroupPage(props) {
   const rootStore = useRootStore();
@@ -21,13 +22,11 @@ export default observer(function GroupPage(props) {
   return (
     <div className="flex-column" style={{ paddingBottom: 4 }}>
       <div style={{ margin: '4px 4px 0' }}>
-        {folder.id}：{folder?.unreadCount}
+        {folder?.id}：{folder?.unreadCount}
       </div>
 
       {folder?.randomItems?.map((item) => (
-        <Link
-          key={item.id}
-          to={`/Item?folderId=${folderId}&id=${item.id}`}
+        <div
           style={{
             margin: 4,
             marginBottom: 0,
@@ -36,17 +35,29 @@ export default observer(function GroupPage(props) {
             padding: 8,
           }}
         >
-          <div>{item.title}</div>
+          <Link key={item.id} to={`/Item?folderId=${folderId}&id=${item.id}`}>
+            <div>{item.title}</div>
+            <div
+              className="flex-row align-center"
+              style={{ marginTop: 8, justifyContent: 'space-between', fontSize: 12, color: 'gray' }}
+            >
+              <div>
+                {item.origin.title} | {item.author}
+              </div>
+              <div>{dayjs(item.updated * 1000).format('YYYY-MM-DD HH:mm')}</div>
+            </div>
+          </Link>
           <div
             className="flex-row align-center"
-            style={{ marginTop: 8, justifyContent: 'space-between', fontSize: 12, color: 'gray' }}
+            style={{ marginTop: 8, justifyContent: 'flex-end' }}
           >
-            <div>
-              {item.origin.title} | {item.author}
-            </div>
-            <div>{dayjs(item.updated * 1000).format('YYYY-MM-DD HH:mm')}</div>
+            <ItemActions
+              item={item}
+              isSubmitting={isSubmitting}
+              setIsSubmitting={setIsSubmitting}
+            />
           </div>
-        </Link>
+        </div>
       ))}
 
       <div style={{ height: 50 }} />
