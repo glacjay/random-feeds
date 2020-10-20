@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { useRootStore } from 'src/RootStore';
 import ItemActions from 'src/widgets/ItemActions';
 
-export default observer(function GroupPage(props) {
+export default observer(function FolderPage(props) {
   const rootStore = useRootStore();
 
   const query = qs.parse(props.location.search.slice(1));
@@ -27,6 +27,7 @@ export default observer(function GroupPage(props) {
 
       {folder?.randomItems?.map((item) => (
         <div
+          key={item.id}
           style={{
             margin: 4,
             marginBottom: 0,
@@ -35,14 +36,14 @@ export default observer(function GroupPage(props) {
             padding: 8,
           }}
         >
-          <Link key={item.id} to={`/Item?folderId=${folderId}&id=${item.id}`}>
+          <Link to={`/Item?folderId=${folderId}&id=${item.id}`}>
             <div>{item.title}</div>
             <div
               className="flex-row align-center"
               style={{ marginTop: 8, justifyContent: 'space-between', fontSize: 12, color: 'gray' }}
             >
               <div>
-                {item.origin.title} | {item.author}
+                {item.origin?.title} | {item.author}
               </div>
               <div>{dayjs(item.updated * 1000).format('YYYY-MM-DD HH:mm')}</div>
             </div>

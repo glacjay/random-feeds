@@ -114,7 +114,7 @@ export default class RootStore {
           s: folderId,
           xt: 'user/-/state/com.google/read',
           r: 'o',
-          n: 10000,
+          n: 20000,
         })).itemRefs;
         folder.items = items;
         yield localStorage.setItem('items:' + folderId, JSON.stringify(items));
@@ -136,11 +136,14 @@ export default class RootStore {
               .map(() => parseInt(Math.random() * items.length)),
           ),
         );
-        randomItems = (yield api2.get(
-          `/reader/api/0/stream/items/contents?output=json${indics
-            .map((idx) => `&i=${items[idx].id}`)
-            .join('')}`,
-        )).items.map((item, idx) => ({ ...item, id: items[idx].id }));
+        randomItems = yield Promise.all(
+          indics.map(async (idx) => ({
+            ...(
+              await api2.get(`/reader/api/0/stream/items/contents?output=json&i=${items[idx].id}`)
+            ).items[0],
+            id: items[idx].id,
+          })),
+        );
         folder.randomItems = randomItems;
         yield localStorage.setItem('randomItems:' + folderId, JSON.stringify(randomItems));
       }
