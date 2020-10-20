@@ -22,7 +22,7 @@ export default observer(function GroupPage(props) {
   return (
     <div className="flex-column" style={{ paddingBottom: 4 }}>
       <div style={{ margin: '4px 4px 0' }}>
-        {folder?.id}：{folder?.unreadCount}
+        {folder?.id}：{folder?.items?.length}
       </div>
 
       {folder?.randomItems?.map((item) => (
