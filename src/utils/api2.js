@@ -32,7 +32,9 @@ api2.request = async (method, url, args, options) => {
     console.warn(method.toUpperCase(), url, args, error);
     if (error?.response?.status === 401) {
       api2.token = null;
-      window.location.href = '/Login';
+      if (api2.history?.push) {
+        api2.history.push('/Login');
+      }
       return;
     }
     throw error;

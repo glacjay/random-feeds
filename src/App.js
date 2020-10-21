@@ -1,10 +1,11 @@
 import { observer } from 'mobx-react';
 import React from 'react';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Switch, useHistory } from 'react-router-dom';
 import { cssTransition, ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import { useRootStore } from 'src/RootStore';
+import api2 from 'src/utils/api2';
 
 export default observer(function App() {
   const rootStore = useRootStore();
@@ -38,6 +39,7 @@ export default observer(function App() {
       />
 
       <HashRouter>
+        <HistoryGetter />
         <Switch>
           <Route path="/Folder" component={require('src/pages/FolderPage').default} />
           <Route path="/Item" component={require('src/pages/ItemPage').default} />
@@ -49,3 +51,13 @@ export default observer(function App() {
     </div>
   );
 });
+
+function HistoryGetter() {
+  const history = useHistory();
+
+  React.useEffect(() => {
+    api2.history = history;
+  }, [history]);
+
+  return null;
+}
