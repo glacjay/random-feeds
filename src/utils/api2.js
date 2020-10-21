@@ -30,6 +30,11 @@ api2.request = async (method, url, args, options) => {
     return result;
   } catch (error) {
     console.warn(method.toUpperCase(), url, args, error);
+    if (error?.response?.status === 401) {
+      api2.token = null;
+      window.location.href = '/Login';
+      return;
+    }
     throw error;
   }
 };
