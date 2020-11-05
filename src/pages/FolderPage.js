@@ -53,6 +53,7 @@ export default observer(function FolderPage(props) {
             style={{ marginTop: 8, justifyContent: 'flex-end' }}
           >
             <ItemActions
+              folderId={folderId}
               item={item}
               isSubmitting={isSubmitting}
               setIsSubmitting={setIsSubmitting}

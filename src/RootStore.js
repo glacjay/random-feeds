@@ -108,13 +108,17 @@ export default class RootStore {
           folder.items = items;
         }
       }
-      if (!(items?.length > 0) || reloadItems) {
+      if (
+        !(items?.length > 0) ||
+        reloadItems ||
+        (!(folder.randomItems?.length > 0) && Math.random() < 1 / (items?.length || 1))
+      ) {
         items = (yield api2.get('/reader/api/0/stream/items/ids', {
           output: 'json',
           s: folderId,
           xt: 'user/-/state/com.google/read',
           r: 'o',
-          n: 20000,
+          n: 5000,
         })).itemRefs;
         folder.items = items;
         yield localStorage.setItem('items:' + folderId, JSON.stringify(items));
@@ -128,7 +132,7 @@ export default class RootStore {
           folder.randomItems = randomItems;
         }
       }
-      if (!(randomItems?.length > 0) || reloadItems || reloadRandomItems) {
+      if (items?.length > 0 && (!(randomItems?.length > 0) || reloadItems || reloadRandomItems)) {
         const indics = Array.from(
           new Set(
             Array(7)
