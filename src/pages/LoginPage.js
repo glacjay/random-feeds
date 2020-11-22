@@ -29,6 +29,7 @@ export default observer(function LoginPage(props) {
 
       <div>password</div>
       <input
+        type="password"
         value={state.password ?? ''}
         onChange={(e) => setState({ ...state, password: e.target.value || null })}
       />

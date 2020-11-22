@@ -111,7 +111,7 @@ export default class RootStore {
       if (
         !(items?.length > 0) ||
         reloadItems ||
-        (!(folder.randomItems?.length > 0) && Math.random() < 1 / (items?.length || 1))
+        (!(folder.randomItems?.length > 0) && Math.random() < 10 / (items?.length || 1))
       ) {
         items = (yield api2.get('/reader/api/0/stream/items/ids', {
           output: 'json',
