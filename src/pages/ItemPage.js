@@ -93,7 +93,7 @@ export default observer(function ItemPage(props) {
         {contentElement || <div dangerouslySetInnerHTML={{ __html: item?.summary?.content }} />}
       </div>
 
-      <div style={{ height: 50 }} />
+      <div style={{ height: 100 }} />
       <div
         className="flex-row"
         style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 7, height: 50 }}
