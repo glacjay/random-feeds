@@ -12,10 +12,6 @@ export default observer(function ItemPage(props) {
   const query = qs.parse(props.location.search.slice(1));
   const { folderId, id: itemId } = query;
 
-  React.useEffect(() => {
-    rootStore.loadItems({ folderId });
-  }, [rootStore, rootStore.token, folderId]);
-
   const folder = rootStore.folders?.find((f) => f.id === folderId);
   const item = folder?.randomItems?.find((item) => item.id === itemId);
 

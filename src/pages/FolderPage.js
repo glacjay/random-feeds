@@ -13,10 +13,6 @@ export default observer(function FolderPage(props) {
   const { id: folderId } = query;
   const folder = rootStore.folders?.find((folder) => folder.id === folderId);
 
-  React.useEffect(() => {
-    rootStore.loadItems({ folderId });
-  }, [rootStore, rootStore.token, folderId]);
-
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   return (
@@ -68,17 +64,6 @@ export default observer(function FolderPage(props) {
         style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 7, height: 50 }}
       >
         <button
-          onClick={() => {
-            setIsSubmitting(true);
-            rootStore.loadItems({ folderId, reloadItems: true });
-            setIsSubmitting(false);
-          }}
-          disabled={isSubmitting}
-          style={{ flex: 1 }}
-        >
-          reload folder items
-        </button>
-        <button
           onClick={async () => {
             setIsSubmitting(true);
             await rootStore.markItemsAsRead(folder.randomItems.map((item) => item.id));
@@ -93,7 +78,7 @@ export default observer(function FolderPage(props) {
         <button
           onClick={() => {
             setIsSubmitting(true);
-            rootStore.loadItems({ folderId, reloadRandomItems: true });
+            rootStore.loadItems({ folderId });
             setIsSubmitting(false);
           }}
           disabled={isSubmitting}

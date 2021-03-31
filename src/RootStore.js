@@ -56,6 +56,14 @@ export default class RootStore {
         /\/label\//.test(tag.id),
       );
 
+      const subscriptions = (yield api2.get('/reader/api/0/subscription/list?output=json'))
+        .subscriptions;
+      for (const folder of this.folders) {
+        folder.subscriptions = subscriptions.filter((sub) =>
+          sub.categories?.some((cat) => cat.id === folder?.id),
+        );
+      }
+
       yield this.loadUnreadCounts(this.folders);
     } catch (ex) {
       console.warn('RootStore.loadFolders error:', ex);
@@ -73,10 +81,17 @@ export default class RootStore {
       if (count) {
         folder.unreadCount = count.count;
       }
+
+      for (const sub of folder.subscriptions || []) {
+        const subCount = unreadCounts.find((c) => c.id === sub.id);
+        if (subCount) {
+          sub.unreadCount = subCount.count;
+        }
+      }
     }
   }
 
-  *loadItems({ folderId, reloadItems, reloadRandomItems }) {
+  *loadItems({ folderId, reloadItems }) {
     try {
       if (!this.token || !folderId) {
         return;
@@ -96,61 +111,53 @@ export default class RootStore {
       if (reloadItems) {
         folder.items = null;
       }
-      if (reloadItems || reloadRandomItems) {
-        folder.randomItems = null;
+
+      const subscriptions = [...folder.subscriptions.filter((sub) => sub.unreadCount > 0)];
+      for (let i = subscriptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [subscriptions[i], subscriptions[j]] = [subscriptions[j], subscriptions[i]];
       }
 
-      let { items } = folder;
-      if (!(items?.length > 0) && !reloadItems) {
-        const itemsStr = yield localStorage.getItem('items:' + folderId);
-        if (itemsStr) {
-          items = JSON.parse(itemsStr);
-          folder.items = items;
-        }
-      }
-      if (
-        !(items?.length > 0) ||
-        reloadItems ||
-        (!(folder.randomItems?.length > 0) && Math.random() < 10 / (items?.length || 1))
+      let totalUnreadCount = subscriptions.reduce((acc, sub) => acc + sub.unreadCount, 0);
+      const feeds = {};
+      for (
+        let i = 0;
+        Object.values(feeds).reduce((acc, c) => acc + c, 0) < 7 && totalUnreadCount > 0;
+        i = (i + 1) % subscriptions.length
       ) {
-        items = (yield api2.get('/reader/api/0/stream/items/ids', {
-          output: 'json',
-          s: folderId,
-          xt: 'user/-/state/com.google/read',
-          r: 'o',
-          n: 5000,
-        })).itemRefs;
-        folder.items = items;
-        yield localStorage.setItem('items:' + folderId, JSON.stringify(items));
+        if (!feeds[subscriptions[i].id]) {
+          feeds[subscriptions[i].id] = 0;
+        }
+        if (feeds[subscriptions[i].id] < subscriptions[i].unreadCount) {
+          feeds[subscriptions[i].id] += 1;
+        }
+        totalUnreadCount -= 1;
       }
 
-      let { randomItems } = folder;
-      if (!(randomItems?.length > 0) && !reloadRandomItems) {
-        const randomItemsStr = yield localStorage.getItem('randomItems:' + folderId);
-        if (randomItemsStr) {
-          randomItems = JSON.parse(randomItemsStr);
-          folder.randomItems = randomItems;
-        }
-      }
-      if (items?.length > 0 && (!(randomItems?.length > 0) || reloadItems || reloadRandomItems)) {
-        const indics = Array.from(
-          new Set(
-            Array(7)
-              .fill()
-              .map(() => parseInt(Math.random() * items.length)),
-          ),
-        );
-        randomItems = yield Promise.all(
-          indics.map(async (idx) => ({
-            ...(
-              await api2.get(`/reader/api/0/stream/items/contents?output=json&i=${items[idx].id}`)
-            ).items[0],
-            id: items[idx].id,
-          })),
-        );
-        folder.randomItems = randomItems;
-        yield localStorage.setItem('randomItems:' + folderId, JSON.stringify(randomItems));
-      }
+      const newItems = yield Promise.all(
+        Object.keys(feeds).map(
+          async (subId) =>
+            (
+              await api2.get('/reader/api/0/stream/items/ids', {
+                output: 'json',
+                s: subId,
+                xt: 'user/-/state/com.google/read',
+                r: 'o',
+                n: feeds[subId],
+              })
+            ).itemRefs,
+        ),
+      );
+      folder.items = newItems.reduce((acc, arr) => [...acc, ...arr], []);
+
+      const randomItems = yield Promise.all(
+        folder.items.map(async (item) => ({
+          ...(await api2.get(`/reader/api/0/stream/items/contents?output=json&i=${item.id}`))
+            .items[0],
+          id: item.id,
+        })),
+      );
+      folder.randomItems = randomItems;
     } catch (ex) {
       console.warn('RootStore.loadItems error:', ex);
       toast(`load items error: ${ex}`);

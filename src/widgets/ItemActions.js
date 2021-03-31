@@ -13,8 +13,6 @@ export default function ItemActions(props) {
           if (await rootStore.markItemsAsRead([item?.id])) {
             if (props.history?.goBack) {
               props.history.goBack();
-            } else {
-              rootStore.loadItems({ folderId });
             }
           }
           setIsSubmitting(false);
