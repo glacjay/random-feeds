@@ -3,7 +3,7 @@ import { useRootStore } from 'src/RootStore';
 
 export default function ItemActions(props) {
   const rootStore = useRootStore();
-  const { folderId, item, isSubmitting, setIsSubmitting } = props;
+  const { item, isSubmitting, setIsSubmitting } = props;
 
   return (
     <Fragment>
