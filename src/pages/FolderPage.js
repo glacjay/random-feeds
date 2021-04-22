@@ -11,14 +11,23 @@ export default observer(function FolderPage(props) {
 
   const query = qs.parse(props.location.search.slice(1));
   const { id: folderId } = query;
-  const folder = rootStore.folders?.find((folder) => folder.id === folderId);
+  React.useEffect(() => {
+    const init = async () => {
+      await rootStore.init();
+      await rootStore.loadItems({ folderId });
+    };
+    init();
+  }, [rootStore, folderId]);
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const folder = rootStore.folders?.find((f) => f.id === folderId);
+  if (!folder) return null;
 
   return (
     <div className="flex-column" style={{ paddingBottom: 4 }}>
       <div style={{ margin: '4px 4px 0' }}>
-        {folder?.id}：{folder?.items?.length}/{folder?.unreadCount}
+        {folder?.id}：{folder?.randomItems?.length}/{folder?.unreadCount}
       </div>
 
       {folder?.randomItems?.map((item) => (
@@ -32,7 +41,7 @@ export default observer(function FolderPage(props) {
             padding: 8,
           }}
         >
-          <Link to={`/Item?folderId=${folderId}&id=${item.id}`}>
+          <Link to={`/Item?id=${item.id}`}>
             <div>{item.title}</div>
             <div
               className="flex-row align-center"
@@ -49,7 +58,6 @@ export default observer(function FolderPage(props) {
             style={{ marginTop: 8, justifyContent: 'flex-end' }}
           >
             <ItemActions
-              folderId={folderId}
               item={item}
               isSubmitting={isSubmitting}
               setIsSubmitting={setIsSubmitting}
@@ -78,7 +86,7 @@ export default observer(function FolderPage(props) {
         <button
           onClick={() => {
             setIsSubmitting(true);
-            rootStore.loadItems({ folderId });
+            rootStore.loadItems({ folderId, reloadItems: true });
             setIsSubmitting(false);
           }}
           disabled={isSubmitting}

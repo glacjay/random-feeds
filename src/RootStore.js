@@ -6,14 +6,24 @@ import api2 from 'src/utils/api2';
 export default class RootStore {
   token = null;
   folders = null;
+  recentlyReadItems = null;
 
   constructor() {
     mobx.makeAutoObservable(this);
   }
 
-  loadToken(token) {
-    this.token = token;
-    api2.token = token;
+  *init() {
+    try {
+      const token = yield localStorage.getItem('token');
+      this.token = token;
+      api2.token = token;
+
+      this.folders = JSON.parse(yield localStorage.getItem('folders'));
+      this.folders.forEach((folder) => this.loadItemsFromLocal(folder));
+    } catch (ex) {
+      console.warn('RootStore.init error:', ex);
+      toast(`init error: ${ex}`);
+    }
   }
 
   *login(account, password) {
@@ -46,6 +56,16 @@ export default class RootStore {
     }
   }
 
+  get loadedItems() {
+    const items = {};
+    for (const folder of this.folders || []) {
+      for (const item of folder.randomItems || []) {
+        items[item.id] = item;
+      }
+    }
+    return items;
+  }
+
   *loadFolders() {
     try {
       if (!this.token) {
@@ -65,6 +85,14 @@ export default class RootStore {
       }
 
       yield this.loadUnreadCounts(this.folders);
+      this.folders.forEach((folder) => this.loadItemsFromLocal(folder));
+
+      yield localStorage.setItem(
+        'folders',
+        JSON.stringify(
+          mobx.toJS(this.folders?.map((folder) => ({ ...folder, randomItems: null }))),
+        ),
+      );
     } catch (ex) {
       console.warn('RootStore.loadFolders error:', ex);
       toast(`load folders error: ${ex}`);
@@ -91,13 +119,18 @@ export default class RootStore {
     }
   }
 
+  *loadItemsFromLocal(folder) {
+    let randomItems = yield localStorage.getItem(`randomItems:${folder.id}`);
+    if (randomItems) {
+      folder.randomItems = JSON.parse(randomItems);
+      return;
+    }
+  }
+
   *loadItems({ folderId, reloadItems }) {
     try {
       if (!this.token || !folderId) {
         return;
-      }
-      if (!this.folders) {
-        yield this.loadFolders();
       }
       const folder = this.folders?.find((f) => f.id === folderId);
       if (!folder) {
@@ -106,10 +139,17 @@ export default class RootStore {
 
       if (reloadItems) {
         yield this.loadUnreadCounts([folder]);
+        folder.randomItems = null;
       }
 
-      if (reloadItems) {
-        folder.items = null;
+      let randomItems = folder.randomItems;
+      if (randomItems) return;
+
+      if (!reloadItems) {
+        yield this.loadItemsFromLocal(folder);
+        if (folder.randomItems) {
+          return;
+        }
       }
 
       const subscriptions = [...folder.subscriptions.filter((sub) => sub.unreadCount > 0)];
@@ -122,7 +162,7 @@ export default class RootStore {
       const feeds = {};
       for (
         let i = 0;
-        Object.values(feeds).reduce((acc, c) => acc + c, 0) < 7 && totalUnreadCount > 0;
+        Object.values(feeds).reduce((acc, c) => acc + c, 0) < 42 && totalUnreadCount > 0;
         i = (i + 1) % subscriptions.length
       ) {
         if (!feeds[subscriptions[i].id]) {
@@ -150,7 +190,7 @@ export default class RootStore {
       );
       folder.items = newItems.reduce((acc, arr) => [...acc, ...arr], []);
 
-      const randomItems = yield Promise.all(
+      randomItems = yield Promise.all(
         folder.items.map(async (item) => ({
           ...(await api2.get(`/reader/api/0/stream/items/contents?output=json&i=${item.id}`))
             .items[0],
@@ -158,6 +198,7 @@ export default class RootStore {
         })),
       );
       folder.randomItems = randomItems;
+      yield localStorage.setItem(`randomItems:${folder.id}`, JSON.stringify(randomItems));
     } catch (ex) {
       console.warn('RootStore.loadItems error:', ex);
       toast(`load items error: ${ex}`);
@@ -174,7 +215,6 @@ export default class RootStore {
         a: 'user/-/state/com.google/read',
       });
 
-      yield this.removeItems(itemIds, 'items');
       yield this.removeItems(itemIds, 'randomItems');
 
       return true;

@@ -8,12 +8,13 @@ import ItemActions from 'src/widgets/ItemActions';
 
 export default observer(function ItemPage(props) {
   const rootStore = useRootStore();
+  React.useEffect(() => {
+    rootStore.init();
+  }, [rootStore]);
 
   const query = qs.parse(props.location.search.slice(1));
-  const { folderId, id: itemId } = query;
-
-  const folder = rootStore.folders?.find((f) => f.id === folderId);
-  const item = folder?.randomItems?.find((item) => item.id === itemId);
+  const { id: itemId } = query;
+  const item = rootStore.loadedItems[itemId];
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -95,7 +96,6 @@ export default observer(function ItemPage(props) {
         style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 7, height: 50 }}
       >
         <ItemActions
-          folderId={folderId}
           item={item}
           history={props.history}
           isSubmitting={isSubmitting}

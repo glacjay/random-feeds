@@ -5,9 +5,12 @@ import { useRootStore } from 'src/RootStore';
 
 export default observer(function IndexPage(props) {
   const rootStore = useRootStore();
-
   React.useEffect(() => {
-    rootStore.loadFolders();
+    const init = async () => {
+      await rootStore.init();
+      await rootStore.loadFolders();
+    };
+    init();
   }, [rootStore, rootStore.token]);
 
   if (!rootStore.token) {

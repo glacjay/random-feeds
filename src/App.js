@@ -2,27 +2,10 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { HashRouter, Route, Switch, useHistory } from 'react-router-dom';
 import { cssTransition, ToastContainer } from 'react-toastify';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
-import { useRootStore } from 'src/RootStore';
 import api2 from 'src/utils/api2';
 
 export default observer(function App() {
-  const rootStore = useRootStore();
-
-  React.useEffect(() => {
-    const loadToken = async () => {
-      try {
-        const token = await localStorage.getItem('token');
-        rootStore.loadToken(token);
-      } catch (ex) {
-        console.warn('App.loadToken error:', ex);
-        toast(`load storage error: ${ex}`);
-      }
-    };
-    loadToken();
-  }, [rootStore]);
-
   return (
     <div>
       <ToastContainer
