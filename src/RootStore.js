@@ -158,11 +158,12 @@ export default class RootStore {
         [subscriptions[i], subscriptions[j]] = [subscriptions[j], subscriptions[i]];
       }
 
+      const loadingCount = Math.max(7, Math.min(42, subscriptions.length));
       let totalUnreadCount = subscriptions.reduce((acc, sub) => acc + sub.unreadCount, 0);
       const feeds = {};
       for (
         let i = 0;
-        Object.values(feeds).reduce((acc, c) => acc + c, 0) < 42 && totalUnreadCount > 0;
+        Object.values(feeds).reduce((acc, c) => acc + c, 0) < loadingCount && totalUnreadCount > 0;
         i = (i + 1) % subscriptions.length
       ) {
         if (!feeds[subscriptions[i].id]) {
