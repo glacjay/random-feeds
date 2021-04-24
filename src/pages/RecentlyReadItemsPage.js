@@ -1,10 +1,8 @@
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
-import qs from 'qs';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRootStore } from 'src/RootStore';
-import ItemActions from 'src/widgets/ItemActions';
 
 export default observer(function FolderPage(props) {
   const rootStore = useRootStore();
@@ -12,7 +10,7 @@ export default observer(function FolderPage(props) {
     rootStore.init();
   }, [rootStore]);
 
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  // const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   return (
     <div className="flex-column" style={{ paddingBottom: 4 }}>
