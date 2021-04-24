@@ -6,7 +6,7 @@ import api2 from 'src/utils/api2';
 export default class RootStore {
   token = null;
   folders = null;
-  recentlyReadItems = null;
+  recentlyReadItems = [];
 
   constructor() {
     mobx.makeAutoObservable(this);
@@ -20,6 +20,8 @@ export default class RootStore {
 
       this.folders = JSON.parse(yield localStorage.getItem('folders'));
       this.folders.forEach((folder) => this.loadItemsFromLocal(folder));
+
+      this.recentlyReadItems = JSON.parse(yield localStorage.getItem('recentlyReadItems'));
     } catch (ex) {
       console.warn('RootStore.init error:', ex);
       toast(`init error: ${ex}`);
@@ -58,6 +60,9 @@ export default class RootStore {
 
   get loadedItems() {
     const items = {};
+    for (const item of this.recentlyReadItems || []) {
+      items[item.id] = item;
+    }
     for (const folder of this.folders || []) {
       for (const item of folder.randomItems || []) {
         items[item.id] = item;
@@ -89,9 +94,7 @@ export default class RootStore {
 
       yield localStorage.setItem(
         'folders',
-        JSON.stringify(
-          mobx.toJS(this.folders?.map((folder) => ({ ...folder, randomItems: null }))),
-        ),
+        JSON.stringify(this.folders?.map((folder) => ({ ...folder, randomItems: null }))),
       );
     } catch (ex) {
       console.warn('RootStore.loadFolders error:', ex);
@@ -215,6 +218,12 @@ export default class RootStore {
       yield api2.post(`/reader/api/0/edit-tag?${itemIds.map((id) => `i=${id}`).join('&')}`, {
         a: 'user/-/state/com.google/read',
       });
+
+      this.recentlyReadItems = [
+        ...itemIds.map((id) => this.loadedItems[id]),
+        ...(this.recentlyReadItems || []),
+      ].slice(0, 42);
+      yield localStorage.setItem('recentlyReadItems', JSON.stringify(this.recentlyReadItems));
 
       yield this.removeItems(itemIds, 'randomItems');
 

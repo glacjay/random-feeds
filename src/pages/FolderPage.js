@@ -27,7 +27,7 @@ export default observer(function FolderPage(props) {
   return (
     <div className="flex-column" style={{ paddingBottom: 4 }}>
       <div style={{ margin: '4px 4px 0' }}>
-        {folder?.id}：{folder?.randomItems?.length}/{folder?.unreadCount}
+        {folder?.id?.replace(/.*\//g, '')}：{folder?.randomItems?.length}/{folder?.unreadCount}
       </div>
 
       {folder?.randomItems?.map((item) => (
@@ -66,7 +66,7 @@ export default observer(function FolderPage(props) {
         </div>
       ))}
 
-      <div style={{ height: 50 }} />
+      <div style={{ height: 100 }} />
       <div
         className="flex-row"
         style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 7, height: 50 }}
@@ -79,7 +79,8 @@ export default observer(function FolderPage(props) {
             setIsSubmitting(false);
           }}
           disabled={isSubmitting}
-          style={{ flex: 1 }}
+          className="button"
+          style={{ height: 44, opacity: isSubmitting ? 0.5 : 1, flex: 1 }}
         >
           mark them as read
         </button>
@@ -90,7 +91,8 @@ export default observer(function FolderPage(props) {
             setIsSubmitting(false);
           }}
           disabled={isSubmitting}
-          style={{ flex: 1 }}
+          className="button"
+          style={{ height: 44, opacity: isSubmitting ? 0.5 : 1, flex: 1 }}
         >
           reload random items
         </button>

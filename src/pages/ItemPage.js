@@ -100,7 +100,7 @@ export default observer(function ItemPage(props) {
           history={props.history}
           isSubmitting={isSubmitting}
           setIsSubmitting={setIsSubmitting}
-          buttonStyle={{ flex: 1 }}
+          buttonStyle={{ flex: 1, height: 44 }}
         />
       </div>
     </div>

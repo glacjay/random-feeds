@@ -18,25 +18,22 @@ export default function ItemActions(props) {
           setIsSubmitting(false);
         }}
         disabled={isSubmitting}
-        style={{ padding: '4px 8px', ...props.buttonStyle }}
+        className="button"
+        style={{ opacity: isSubmitting ? 0.5 : 1, ...props.buttonStyle }}
       >
         mark as read
       </button>
+
       <a
         href={item?.canonical?.[0]?.href}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex-row justify-center align-center"
-        style={{
-          border: '1px solid lightgray',
-          borderRadius: 4,
-          background: 'white',
-          padding: '4px 8px',
-          ...props.buttonStyle,
-        }}
+        className="button flex-row justify-center align-center"
+        style={{ opacity: isSubmitting ? 0.5 : 1, textDecoration: 'none', ...props.buttonStyle }}
       >
         original link
       </a>
+
       <button
         onClick={() => {
           rootStore.removeItems([item?.id], 'randomItems');
@@ -45,7 +42,8 @@ export default function ItemActions(props) {
           }
         }}
         disabled={isSubmitting}
-        style={{ padding: '4px 8px', ...props.buttonStyle }}
+        className="button"
+        style={{ opacity: isSubmitting ? 0.5 : 1, ...props.buttonStyle }}
       >
         later
       </button>

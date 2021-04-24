@@ -23,7 +23,12 @@ export default observer(function App() {
 
       <HashRouter>
         <HistoryGetter />
+
         <Switch>
+          <Route
+            path="/RecentlyReadItems"
+            component={require('src/pages/RecentlyReadItemsPage').default}
+          />
           <Route path="/Folder" component={require('src/pages/FolderPage').default} />
           <Route path="/Item" component={require('src/pages/ItemPage').default} />
 
