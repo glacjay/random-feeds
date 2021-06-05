@@ -71,19 +71,22 @@ export default observer(function FolderPage(props) {
         className="flex-row"
         style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 7, height: 50 }}
       >
-        <button
-          onClick={async () => {
-            setIsSubmitting(true);
-            await rootStore.markItemsAsRead(folder.randomItems.map((item) => item.id));
-            await rootStore.loadItems({ folderId });
-            setIsSubmitting(false);
-          }}
-          disabled={isSubmitting}
-          className="button"
-          style={{ height: 44, opacity: isSubmitting ? 0.5 : 1, flex: 1 }}
-        >
-          mark them as read
-        </button>
+        {!!this.TODO && (
+          <button
+            onClick={async () => {
+              setIsSubmitting(true);
+              await rootStore.markItemsAsRead(folder.randomItems.map((item) => item.id));
+              await rootStore.loadItems({ folderId });
+              setIsSubmitting(false);
+            }}
+            disabled={isSubmitting}
+            className="button"
+            style={{ height: 44, opacity: isSubmitting ? 0.5 : 1, flex: 1 }}
+          >
+            mark them as read
+          </button>
+        )}
+
         <button
           onClick={() => {
             setIsSubmitting(true);
