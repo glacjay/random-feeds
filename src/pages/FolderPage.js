@@ -71,7 +71,7 @@ export default observer(function FolderPage(props) {
         className="flex-row"
         style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 7, height: 50 }}
       >
-        {!!this.TODO && (
+        {Math.random() > 2 && (
           <button
             onClick={async () => {
               setIsSubmitting(true);
