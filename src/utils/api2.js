@@ -4,7 +4,7 @@ import qs from 'qs';
 const api2 = {};
 
 let api = axios.create({
-  baseURL: 'https://damp-boat-612e.glacjay.workers.dev/?https://bazqux.com',
+  baseURL: 'https://damp-boat-612e.glacjay.workers.dev',
   timeout: 30000,
 });
 
