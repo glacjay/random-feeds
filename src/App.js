@@ -1,8 +1,9 @@
+import 'react-toastify/dist/ReactToastify.min.css';
+
 import { observer } from 'mobx-react';
 import React from 'react';
 import { HashRouter, Route, Switch, useHistory } from 'react-router-dom';
 import { cssTransition, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.min.css';
 import api2 from 'src/utils/api2';
 
 export default observer(function App() {
