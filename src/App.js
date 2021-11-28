@@ -25,17 +25,19 @@ export default observer(function App() {
       <HashRouter>
         <HistoryGetter />
 
-        <Switch>
-          <Route
-            path="/RecentlyReadItems"
-            component={require('src/pages/RecentlyReadItemsPage').default}
-          />
-          <Route path="/Folder" component={require('src/pages/FolderPage').default} />
-          <Route path="/Item" component={require('src/pages/ItemPage').default} />
+        <div style={{ margin: '0 auto', maxWidth: 666 }}>
+          <Switch>
+            <Route
+              path="/RecentlyReadItems"
+              component={require('src/pages/RecentlyReadItemsPage').default}
+            />
+            <Route path="/Folder" component={require('src/pages/FolderPage').default} />
+            <Route path="/Item" component={require('src/pages/ItemPage').default} />
 
-          <Route path="/Login" component={require('src/pages/LoginPage').default} />
-          <Route path="/" component={require('src/pages/IndexPage').default} />
-        </Switch>
+            <Route path="/Login" component={require('src/pages/LoginPage').default} />
+            <Route path="/" component={require('src/pages/IndexPage').default} />
+          </Switch>
+        </div>
       </HashRouter>
     </div>
   );
