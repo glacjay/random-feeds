@@ -161,7 +161,7 @@ export default class RootStore {
         [subscriptions[i], subscriptions[j]] = [subscriptions[j], subscriptions[i]];
       }
 
-      const loadingCount = Math.max(7, Math.min(42, subscriptions.length));
+      const loadingCount = Math.max(7, Math.min(7, subscriptions.length));
       let totalUnreadCount = subscriptions.reduce((acc, sub) => acc + sub.unreadCount, 0);
       const feeds = {};
       for (
