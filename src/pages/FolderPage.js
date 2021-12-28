@@ -41,7 +41,7 @@ export default observer(function FolderPage(props) {
             padding: 8,
           }}
         >
-          <Link to={`/Item?id=${item.id}`}>
+          <Link to={`/Item?${qs.stringify({ folderId, id: item.id })}`}>
             <div>{item.title}</div>
             <div
               className="flex-row align-center"
@@ -58,6 +58,7 @@ export default observer(function FolderPage(props) {
             style={{ marginTop: 8, justifyContent: 'flex-end' }}
           >
             <ItemActions
+              folderId={folderId}
               item={item}
               isSubmitting={isSubmitting}
               setIsSubmitting={setIsSubmitting}

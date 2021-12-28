@@ -96,6 +96,7 @@ export default observer(function ItemPage(props) {
         style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 7, height: 50 }}
       >
         <ItemActions
+          folderId={query.folderId}
           item={item}
           history={props.history}
           isSubmitting={isSubmitting}

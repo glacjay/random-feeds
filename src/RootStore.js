@@ -3,6 +3,8 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import api2 from 'src/utils/api2';
 
+const LOADING_COUNT = 7;
+
 export default class RootStore {
   token = null;
   folders = null;
@@ -146,11 +148,11 @@ export default class RootStore {
       }
 
       let randomItems = folder.randomItems;
-      if (randomItems) return;
+      if (randomItems?.length > Math.random() * LOADING_COUNT) return;
 
       if (!reloadItems) {
         yield this.loadItemsFromLocal(folder);
-        if (folder.randomItems) {
+        if (folder.randomItems?.length >= LOADING_COUNT) {
           return;
         }
       }
@@ -161,46 +163,49 @@ export default class RootStore {
         [subscriptions[i], subscriptions[j]] = [subscriptions[j], subscriptions[i]];
       }
 
-      const loadingCount = Math.max(7, Math.min(7, subscriptions.length));
-      let totalUnreadCount = subscriptions.reduce((acc, sub) => acc + sub.unreadCount, 0);
-      const feeds = {};
-      for (
-        let i = 0;
-        Object.values(feeds).reduce((acc, c) => acc + c, 0) < loadingCount && totalUnreadCount > 0;
-        i = (i + 1) % subscriptions.length
-      ) {
-        if (!feeds[subscriptions[i].id]) {
-          feeds[subscriptions[i].id] = 0;
-        }
-        if (feeds[subscriptions[i].id] < subscriptions[i].unreadCount) {
-          feeds[subscriptions[i].id] += 1;
-        }
-        totalUnreadCount -= 1;
-      }
-
-      const newItems = yield Promise.all(
-        Object.keys(feeds).map(
-          async (subId) =>
+      let newItemsArray = yield Promise.all(
+        subscriptions.slice(0, LOADING_COUNT).map(
+          async (subscription) =>
             (
               await api2.get('/reader/api/0/stream/items/ids', {
                 output: 'json',
-                s: subId,
+                s: subscription.id,
                 xt: 'user/-/state/com.google/read',
                 r: 'o',
-                n: feeds[subId],
+                n: LOADING_COUNT,
               })
             ).itemRefs,
         ),
       );
-      folder.items = newItems.reduce((acc, arr) => [...acc, ...arr], []);
 
-      randomItems = yield Promise.all(
-        folder.items.map(async (item) => ({
+      const loadingItems = [];
+      let addedCount = 0;
+      while (newItemsArray.length > 0) {
+        const newItems = newItemsArray.shift();
+        if (newItems.length > 0) {
+          const newItem = newItems.shift();
+          if (!loadingItems.some((item) => item.id === newItem.id)) {
+            loadingItems.push(newItem);
+            addedCount += 1;
+            if (addedCount >= LOADING_COUNT) break;
+          }
+          newItemsArray.push(newItems);
+        }
+      }
+
+      const newRandomItems = yield Promise.all(
+        loadingItems.map(async (item) => ({
           ...(await api2.get(`/reader/api/0/stream/items/contents?output=json&i=${item.id}`))
             .items[0],
           id: item.id,
         })),
       );
+
+      randomItems = [...(randomItems || []), ...newRandomItems];
+      randomItems = randomItems.filter(
+        (item, pos, self) => self.findIndex((i2) => i2.id === item.id) === pos,
+      );
+
       folder.randomItems = randomItems;
       yield localStorage.setItem(`randomItems:${folder.id}`, JSON.stringify(randomItems));
     } catch (ex) {

@@ -11,6 +11,9 @@ export default function ItemActions(props) {
         onClick={async () => {
           setIsSubmitting(true);
           if (await rootStore.markItemsAsRead([item?.id])) {
+            if (props.folderId) {
+              rootStore.loadItems({ folderId: props.folderId });
+            }
             if (props.history?.goBack) {
               props.history.goBack();
             }
