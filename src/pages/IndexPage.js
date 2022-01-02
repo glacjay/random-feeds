@@ -2,6 +2,7 @@ import { observer } from 'mobx-react';
 import React, { Fragment } from 'react';
 import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
+import { useToken } from 'src/data';
 import { useRootStore } from 'src/RootStore';
 import { useToast } from 'src/utils/useToast';
 
@@ -15,7 +16,7 @@ export default observer(function IndexPage(props) {
     init();
   }, [rootStore, rootStore.token]);
 
-  const { data: token, isSuccess } = useQuery('token', () => localStorage.getItem('token'));
+  const { token, isSuccess } = useToken();
 
   if (isSuccess && !token) {
     return (
@@ -28,16 +29,7 @@ export default observer(function IndexPage(props) {
   return (
     <div className="flex-column" style={{ minHeight: '100vh' }}>
       <TotalUnreadsCount />
-
-      {rootStore.folders?.map((folder) => (
-        <Link
-          key={folder.id}
-          to={`/Folder?id=${folder.id}`}
-          style={{ margin: '4px 4px 0', border: '1px solid black', borderRadius: 4, padding: 8 }}
-        >
-          {folder.id?.replace(/.*\//g, '')} ({folder.unreadCount})
-        </Link>
-      ))}
+      <Folders />
 
       {rootStore.recentlyReadItems?.length > 0 && (
         <Fragment>
@@ -55,11 +47,49 @@ export default observer(function IndexPage(props) {
 });
 
 function TotalUnreadsCount() {
-  const { data: token } = useQuery('token', () => localStorage.getItem('token'));
-
+  const { token } = useToken();
   const { data, error } = useQuery('/reader/api/0/unread-count?output=json', { enabled: !!token });
   useToast(error);
   const totalUnreadsCount = data?.bq_total_unreads;
 
   return <div style={{ margin: '4px 4px 0' }}>未读：{totalUnreadsCount}</div>;
+}
+
+function Folders() {
+  const { token } = useToken();
+  const { data: folders, error } = useQuery('/reader/api/0/tag/list?output=json', {
+    enabled: !!token,
+    select: (data) => data.tags.filter((tag) => /\/label\//.test(tag.id)),
+  });
+  useToast(error);
+
+  return (
+    <Fragment>
+      {folders?.map((folder) => (
+        <Folder key={folder.id} folder={folder} />
+      ))}
+    </Fragment>
+  );
+}
+
+function Folder({ folder }) {
+  const { token } = useToken();
+  const { data: unreadCount, error } = useQuery('/reader/api/0/unread-count?output=json', {
+    enabled: !!token,
+    select: (data) => {
+      const folderId = folder.id?.replace(/\d+/, '-');
+      const count = data.unreadcounts.find((c) => c.id === folderId);
+      if (count) return count.count;
+    },
+  });
+  useToast(error);
+
+  return (
+    <Link
+      to={`/Folder?id=${folder.id}`}
+      style={{ margin: '4px 4px 0', border: '1px solid black', borderRadius: 4, padding: 8 }}
+    >
+      {folder.id?.replace(/.*\//g, '')} ({unreadCount})
+    </Link>
+  );
 }
