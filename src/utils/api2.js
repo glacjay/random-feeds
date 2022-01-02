@@ -13,9 +13,12 @@ api2.request = async (method, url, args, options) => {
     const actualArgs = {
       ...args,
     };
+
+    const token = await localStorage.getItem('token');
     const headers = {
-      ...(api2.token ? { Authorization: `GoogleLogin auth=${api2.token}` } : {}),
+      ...(token ? { Authorization: `GoogleLogin auth=${token}` } : {}),
     };
+
     const result = (
       await api.request({
         method,
@@ -31,8 +34,7 @@ api2.request = async (method, url, args, options) => {
   } catch (error) {
     console.warn(method.toUpperCase(), url, args, error);
     if (error?.response?.status === 401) {
-      api2.token = null;
-      api2.history?.push?.('/Login');
+      window.location.push('/Login');
     }
     throw error;
   }

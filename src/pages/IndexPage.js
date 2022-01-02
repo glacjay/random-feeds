@@ -1,21 +1,10 @@
-import { observer } from 'mobx-react';
 import React, { Fragment } from 'react';
 import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
 import { useToken } from 'src/data';
-import { useRootStore } from 'src/RootStore';
 import { useToast } from 'src/utils/useToast';
 
-export default observer(function IndexPage(props) {
-  const rootStore = useRootStore();
-  React.useEffect(() => {
-    const init = async () => {
-      await rootStore.init();
-      await rootStore.loadFolders();
-    };
-    init();
-  }, [rootStore, rootStore.token]);
-
+export default function IndexPage() {
   const { token, isSuccess } = useToken();
 
   if (isSuccess && !token) {
@@ -30,21 +19,10 @@ export default observer(function IndexPage(props) {
     <div className="flex-column" style={{ minHeight: '100vh' }}>
       <TotalUnreadsCount />
       <Folders />
-
-      {rootStore.recentlyReadItems?.length > 0 && (
-        <Fragment>
-          <div style={{ flex: 1, minHeight: 16 }} />
-          <Link
-            to={`/RecentlyReadItems`}
-            style={{ margin: '4px 4px', border: '1px solid black', borderRadius: 4, padding: 8 }}
-          >
-            最近已读文章
-          </Link>
-        </Fragment>
-      )}
+      <RecentlyReadItems />
     </div>
   );
-});
+}
 
 function TotalUnreadsCount() {
   const { token } = useToken();
@@ -91,5 +69,28 @@ function Folder({ folder }) {
     >
       {folder.id?.replace(/.*\//g, '')} ({unreadCount})
     </Link>
+  );
+}
+
+function RecentlyReadItems() {
+  const { data: recentlyReadItems } = useQuery('recentlyReadItems', {
+    queryFn: () => localStorage.getItem('recentlyReadItems'),
+    select: (data) => JSON.parse(data),
+  });
+
+  return (
+    <Fragment>
+      {recentlyReadItems?.length > 0 && (
+        <Fragment>
+          <div style={{ flex: 1, minHeight: 16 }} />
+          <Link
+            to={`/RecentlyReadItems`}
+            style={{ margin: '4px 4px', border: '1px solid black', borderRadius: 4, padding: 8 }}
+          >
+            最近已读文章 ({recentlyReadItems.length})
+          </Link>
+        </Fragment>
+      )}
+    </Fragment>
   );
 }
