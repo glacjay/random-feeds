@@ -2,16 +2,28 @@ import './index.css';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import RootStore, { RootStoreContext } from 'src/RootStore';
 
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import api2 from './utils/api2';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      queryFn: ({ queryKey }) => api2.get(...(queryKey || [])),
+    },
+  },
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <RootStoreContext.Provider value={new RootStore()}>
-      <App />
-    </RootStoreContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <RootStoreContext.Provider value={new RootStore()}>
+        <App />
+      </RootStoreContext.Provider>
+    </QueryClientProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 );

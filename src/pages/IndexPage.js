@@ -1,7 +1,9 @@
 import { observer } from 'mobx-react';
 import React, { Fragment } from 'react';
+import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
 import { useRootStore } from 'src/RootStore';
+import { useToast } from 'src/utils/useToast';
 
 export default observer(function IndexPage(props) {
   const rootStore = useRootStore();
@@ -13,7 +15,9 @@ export default observer(function IndexPage(props) {
     init();
   }, [rootStore, rootStore.token]);
 
-  if (!rootStore.token) {
+  const { data: token, isSuccess } = useQuery('token', () => localStorage.getItem('token'));
+
+  if (isSuccess && !token) {
     return (
       <Link to="/Login" style={{ margin: 8, border: '1px solid black', padding: 16 }}>
         login
@@ -23,7 +27,7 @@ export default observer(function IndexPage(props) {
 
   return (
     <div className="flex-column" style={{ minHeight: '100vh' }}>
-      <div style={{ margin: '4px 4px 0' }}>未读：{rootStore.totalUnreadCounts}</div>
+      <TotalUnreadsCount />
 
       {rootStore.folders?.map((folder) => (
         <Link
@@ -49,3 +53,13 @@ export default observer(function IndexPage(props) {
     </div>
   );
 });
+
+function TotalUnreadsCount() {
+  const { data: token } = useQuery('token', () => localStorage.getItem('token'));
+
+  const { data, error } = useQuery('/reader/api/0/unread-count?output=json', { enabled: !!token });
+  useToast(error);
+  const totalUnreadsCount = data?.bq_total_unreads;
+
+  return <div style={{ margin: '4px 4px 0' }}>未读：{totalUnreadsCount}</div>;
+}
