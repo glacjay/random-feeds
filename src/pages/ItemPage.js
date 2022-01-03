@@ -4,18 +4,13 @@ import { observer } from 'mobx-react';
 import qs from 'qs';
 import React, { useMemo } from 'react';
 import { useItem } from 'src/data';
-import { useRootStore } from 'src/RootStore';
 import { useToast } from 'src/utils/useToast';
 import ItemActions from 'src/widgets/ItemActions';
 
 export default observer(function ItemPage(props) {
-  const rootStore = useRootStore();
-  React.useEffect(() => {
-    rootStore.init();
-  }, [rootStore]);
-
   const query = qs.parse(props.location.search.slice(1));
   const { id: itemId } = query;
+
   const { item, error } = useItem({ id: itemId });
   useToast(error);
 
