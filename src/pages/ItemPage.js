@@ -2,8 +2,10 @@ import dayjs from 'dayjs';
 import HtmlToReact, { Parser as HtmlToReactParser } from 'html-to-react';
 import { observer } from 'mobx-react';
 import qs from 'qs';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useItem } from 'src/data';
 import { useRootStore } from 'src/RootStore';
+import { useToast } from 'src/utils/useToast';
 import ItemActions from 'src/widgets/ItemActions';
 
 export default observer(function ItemPage(props) {
@@ -14,10 +16,12 @@ export default observer(function ItemPage(props) {
 
   const query = qs.parse(props.location.search.slice(1));
   const { id: itemId } = query;
-  const item = rootStore.loadedItems[itemId];
+  const { item, error } = useItem({ id: itemId });
+  useToast(error);
 
-  let contentElement = null;
-  if (item?.summary?.content) {
+  const contentElement = useMemo(() => {
+    if (!item?.summary?.content) return null;
+
     const preprocessingInstructions = [
       {
         shouldPreprocessNode: (node) => node.name === 'img',
@@ -47,18 +51,18 @@ export default observer(function ItemPage(props) {
     const processNodeDefinitions = new HtmlToReact.ProcessNodeDefinitions(React);
     const processingInstructions = [
       {
-        shouldProcessNode: (node) => true,
+        shouldProcessNode: () => true,
         processNode: processNodeDefinitions.processDefaultNode,
       },
     ];
     const parser = new HtmlToReactParser();
-    contentElement = parser.parseWithInstructions(
+    return parser.parseWithInstructions(
       item.summary.content,
       () => true,
       processingInstructions,
       preprocessingInstructions,
     );
-  }
+  }, [item]);
 
   return (
     <div className="flex-column">

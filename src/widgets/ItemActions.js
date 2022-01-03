@@ -1,27 +1,55 @@
-import { action } from 'mobx';
+import { runInAction } from 'mobx';
 import { observer } from 'mobx-react';
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback } from 'react';
+import { useQueryClient } from 'react-query';
+import { toast } from 'react-toastify';
 import { useRootStore } from 'src/RootStore';
+import api2 from 'src/utils/api2';
 
 export default observer(function ItemActions(props) {
+  const queryClient = useQueryClient();
   const rootStore = useRootStore();
-  const { item } = props;
+  const { folderId, item } = props;
+
+  const removeItem = useCallback(() => {
+    const key = `randomItems:${folderId}`;
+    const items = JSON.parse(localStorage.getItem(key) || '[]');
+    localStorage.setItem(key, JSON.stringify(items.filter((it) => it.id !== item.id)));
+    queryClient.invalidateQueries(['randomItems', folderId]);
+  }, [queryClient, folderId, item?.id]);
+
+  const markAsRead = useCallback(() => {
+    runInAction(async () => {
+      try {
+        rootStore.isSubmitting = true;
+
+        await api2.post(`/reader/api/0/edit-tag?i=${item.id}`, {
+          a: 'user/-/state/com.google/read',
+        });
+
+        const recentlyReadItems = [
+          item,
+          ...JSON.parse(localStorage.getItem('recentlyReadItems') || '[]'),
+        ].slice(0, 42);
+        localStorage.setItem('recentlyReadItems', JSON.stringify(recentlyReadItems));
+
+        removeItem();
+        props.history?.goBack?.();
+      } catch (ex) {
+        console.warn('ItemActions.markAsRead error:', ex);
+        toast(`mark as read error: ${ex}`);
+      } finally {
+        rootStore.isSubmitting = false;
+      }
+    });
+  }, [rootStore, props.history, removeItem, item]);
+
+  if (!item?.id) return null;
 
   return (
     <Fragment>
       <button
-        onClick={action(async () => {
-          rootStore.isSubmitting = true;
-          if (await rootStore.markItemsAsRead([item?.id])) {
-            if (props.folderId) {
-              rootStore.loadItems({ folderId: props.folderId });
-            }
-            if (props.history?.goBack) {
-              props.history.goBack();
-            }
-          }
-          rootStore.isSubmitting = false;
-        })}
+        onClick={markAsRead}
         disabled={rootStore.isSubmitting}
         className="button"
         style={{ opacity: rootStore.isSubmitting ? 0.5 : 1, ...props.buttonStyle }}
@@ -44,12 +72,7 @@ export default observer(function ItemActions(props) {
       </a>
 
       <button
-        onClick={() => {
-          rootStore.removeItems([item?.id], 'randomItems');
-          if (props.history?.goBack) {
-            props.history.goBack();
-          }
-        }}
+        onClick={removeItem}
         disabled={rootStore.isSubmitting}
         className="button"
         style={{ opacity: rootStore.isSubmitting ? 0.5 : 1, ...props.buttonStyle }}

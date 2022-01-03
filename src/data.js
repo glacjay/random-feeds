@@ -94,19 +94,9 @@ export function useRandomItems({ folderId, isReloading }) {
         }
       }
 
-      const newRandomItems = await Promise.all(
-        loadingItems.map(async (item) => ({
-          ...(
-            await api2.get(`/reader/api/0/stream/items/contents?output=json&i=${item.id}`)
-          ).items[0],
-          id: item.id,
-        })),
+      const randomItems = [...(isReloading ? [] : localRandomItems || []), ...loadingItems].filter(
+        (item, pos, self) => self.findIndex((i2) => i2.id === item.id) === pos,
       );
-
-      const randomItems = [
-        ...(isReloading ? [] : localRandomItems || []),
-        ...newRandomItems,
-      ].filter((item, pos, self) => self.findIndex((i2) => i2.id === item.id) === pos);
 
       localStorage.setItem(`randomItems:${folderId}`, JSON.stringify(randomItems));
       return randomItems;
@@ -114,4 +104,24 @@ export function useRandomItems({ folderId, isReloading }) {
     { enabled: subscriptions?.length > 0 },
   );
   return { ...result, randomItems: result.data };
+}
+
+export function useItem(item) {
+  const result = useQuery(`/reader/api/0/stream/items/contents?output=json&i=${item.id}`, {
+    enabled: !item.crawlTimeMsec,
+    select: (data) => data.items[0],
+  });
+  return {
+    ...result,
+    item: item.crawlTimeMsec
+      ? item
+      : {
+          ...result.data,
+          // There are two different item id formats:
+          // - long number: from loading ids
+          // - some sort of url path: from loading item detail
+          // I'd prefer the former.
+          id: item.id,
+        },
+  };
 }
