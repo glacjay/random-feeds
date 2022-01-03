@@ -1,9 +1,11 @@
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
 import qs from 'qs';
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
+import { useFolders, useFolderUnreadsCount } from 'src/data';
 import { useRootStore } from 'src/RootStore';
+import { useToast } from 'src/utils/useToast';
 import ItemActions from 'src/widgets/ItemActions';
 
 export default observer(function FolderPage(props) {
@@ -21,13 +23,16 @@ export default observer(function FolderPage(props) {
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const folder = rootStore.folders?.find((f) => f.id === folderId);
+  const { folders, error } = useFolders();
+  useToast(error);
+  const folder = folders?.find((f) => f.id === folderId);
   if (!folder) return null;
 
   return (
     <div className="flex-column" style={{ paddingBottom: 4 }}>
       <div style={{ margin: '4px 4px 0' }}>
-        {folder?.id?.replace(/.*\//g, '')}：{folder?.randomItems?.length}/{folder?.unreadCount}
+        {folder?.id?.replace(/.*\//g, '')}：{folder?.randomItems?.length}/
+        <FolderUnreadsCount folder={folder} />
       </div>
 
       {folder?.randomItems?.map((item) => (
@@ -104,3 +109,10 @@ export default observer(function FolderPage(props) {
     </div>
   );
 });
+
+function FolderUnreadsCount({ folder }) {
+  const { unreadsCount, error } = useFolderUnreadsCount(folder);
+  useToast(error);
+
+  return <Fragment>{unreadsCount}</Fragment>;
+}

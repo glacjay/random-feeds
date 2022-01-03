@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
-import { useToken } from 'src/data';
+import { useFolders, useFolderUnreadsCount, useToken } from 'src/data';
 import { useToast } from 'src/utils/useToast';
 
 export default function IndexPage() {
@@ -34,11 +34,7 @@ function TotalUnreadsCount() {
 }
 
 function Folders() {
-  const { token } = useToken();
-  const { data: folders, error } = useQuery('/reader/api/0/tag/list?output=json', {
-    enabled: !!token,
-    select: (data) => data.tags.filter((tag) => /\/label\//.test(tag.id)),
-  });
+  const { folders, error } = useFolders();
   useToast(error);
 
   return (
@@ -51,15 +47,7 @@ function Folders() {
 }
 
 function Folder({ folder }) {
-  const { token } = useToken();
-  const { data: unreadCount, error } = useQuery('/reader/api/0/unread-count?output=json', {
-    enabled: !!token,
-    select: (data) => {
-      const folderId = folder.id?.replace(/\d+/, '-');
-      const count = data.unreadcounts.find((c) => c.id === folderId);
-      if (count) return count.count;
-    },
-  });
+  const { unreadsCount, error } = useFolderUnreadsCount(folder);
   useToast(error);
 
   return (
@@ -67,7 +55,7 @@ function Folder({ folder }) {
       to={`/Folder?id=${folder.id}`}
       style={{ margin: '4px 4px 0', border: '1px solid black', borderRadius: 4, padding: 8 }}
     >
-      {folder.id?.replace(/.*\//g, '')} ({unreadCount})
+      {folder.id?.replace(/.*\//g, '')} ({unreadsCount})
     </Link>
   );
 }
