@@ -89,7 +89,7 @@ export function useRandomItems({ folderId, isReloading }) {
           if (!loadingItems.some((item) => item.id === newItem.id)) {
             loadingItems.push(newItem);
             addedCount += 1;
-            if (addedCount >= 2 * LOADING_COUNT) break;
+            if (addedCount >= 1.5 * LOADING_COUNT) break;
           }
           newItemsArray.push(newItems);
         }

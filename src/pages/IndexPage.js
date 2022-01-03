@@ -4,15 +4,12 @@ import { Link } from 'react-router-dom';
 import { useFolders, useFolderUnreadsCount, useToken } from 'src/data';
 import { useToast } from 'src/utils/useToast';
 
-export default function IndexPage() {
+export default function IndexPage(props) {
   const { token, isSuccess } = useToken();
 
   if (isSuccess && !token) {
-    return (
-      <Link to="/Login" style={{ margin: 8, border: '1px solid black', padding: 16 }}>
-        login
-      </Link>
-    );
+    props.history.push('/Login');
+    return null;
   }
 
   return (
