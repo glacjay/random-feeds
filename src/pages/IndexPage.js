@@ -5,9 +5,9 @@ import { useFolders, useFolderUnreadsCount, useToken } from 'src/data';
 import { useToast } from 'src/utils/useToast';
 
 export default function IndexPage(props) {
-  const { token, isSuccess } = useToken();
+  const token = useToken();
 
-  if (isSuccess && !token) {
+  if (!token) {
     props.history.push('/Login');
     return null;
   }
@@ -22,7 +22,7 @@ export default function IndexPage(props) {
 }
 
 function TotalUnreadsCount() {
-  const { token } = useToken();
+  const token = useToken();
   const { data, error } = useQuery('/reader/api/0/unread-count?output=json', { enabled: !!token });
   useToast(error);
   const totalUnreadsCount = data?.bq_total_unreads;
@@ -58,10 +58,7 @@ function Folder({ folder }) {
 }
 
 function RecentlyReadItems() {
-  const { data: recentlyReadItems } = useQuery('recentlyReadItems', {
-    queryFn: () => localStorage.getItem('recentlyReadItems'),
-    select: (data) => JSON.parse(data),
-  });
+  const recentlyReadItems = JSON.parse(localStorage.getItem('recentlyReadItems') || '[]');
 
   return (
     <Fragment>

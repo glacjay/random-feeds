@@ -5,12 +5,11 @@ import api2 from './utils/api2';
 const LOADING_COUNT = 7;
 
 export function useToken() {
-  const query = useQuery('token', () => localStorage.getItem('token'));
-  return { ...query, token: query.data };
+  return localStorage.getItem('token');
 }
 
 export function useFolders() {
-  const { token } = useToken();
+  const token = useToken();
   const result = useQuery('/reader/api/0/tag/list?output=json', {
     enabled: !!token,
     select: (data) => data.tags.filter((tag) => /\/label\//.test(tag.id)),
@@ -19,7 +18,7 @@ export function useFolders() {
 }
 
 function useAllUnreadCounts() {
-  const { token } = useToken();
+  const token = useToken();
   const result = useQuery('/reader/api/0/unread-count?output=json', {
     enabled: !!token,
     select: (data) => data.unreadcounts,
@@ -34,7 +33,7 @@ export function useFolderUnreadsCount(folder) {
 }
 
 function useAllSubscriptions() {
-  const { token } = useToken();
+  const token = useToken();
   const result = useQuery('/reader/api/0/subscription/list?output=json', {
     enabled: !!token,
     select: (data) => data.subscriptions,
