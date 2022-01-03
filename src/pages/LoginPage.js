@@ -1,3 +1,4 @@
+import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { useRootStore } from 'src/RootStore';
@@ -8,7 +9,6 @@ export default observer(function LoginPage(props) {
   const [state, setState] = React.useState({
     account: null,
     password: null,
-    isSubmitting: false,
   });
 
   return (
@@ -35,14 +35,14 @@ export default observer(function LoginPage(props) {
       />
 
       <button
-        onClick={async () => {
-          setState({ ...state, isSubmitting: true });
+        onClick={action(async () => {
+          rootStore.isSubmitting = true;
           if (await rootStore.login(state.account, state.password)) {
             props.history.goBack();
           }
-          setState({ ...state, isSubmitting: false });
-        }}
-        disabled={state.isSubmitting}
+          rootStore.isSubmitting = false;
+        })}
+        disabled={rootStore.isSubmitting}
         style={{ gridColumn: '1 / span 2', padding: 8, fontSize: 14 }}
       >
         login

@@ -16,8 +16,6 @@ export default observer(function ItemPage(props) {
   const { id: itemId } = query;
   const item = rootStore.loadedItems[itemId];
 
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-
   let contentElement = null;
   if (item?.summary?.content) {
     const preprocessingInstructions = [
@@ -99,8 +97,6 @@ export default observer(function ItemPage(props) {
           folderId={query.folderId}
           item={item}
           history={props.history}
-          isSubmitting={isSubmitting}
-          setIsSubmitting={setIsSubmitting}
           buttonStyle={{ flex: 1, height: 44 }}
         />
       </div>

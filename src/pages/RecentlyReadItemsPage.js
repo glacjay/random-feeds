@@ -10,8 +10,6 @@ export default observer(function FolderPage(props) {
     rootStore.init();
   }, [rootStore]);
 
-  // const [isSubmitting, setIsSubmitting] = React.useState(false);
-
   return (
     <div className="flex-column" style={{ paddingBottom: 4 }}>
       <div style={{ margin: '4px 4px 0' }}>最近已读文章：{rootStore.recentlyReadItems?.length}</div>

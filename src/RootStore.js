@@ -1,4 +1,4 @@
-import * as mobx from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import React from 'react';
 import { toast } from 'react-toastify';
 import api2 from 'src/utils/api2';
@@ -6,12 +6,14 @@ import api2 from 'src/utils/api2';
 const LOADING_COUNT = 7;
 
 export default class RootStore {
+  isSubmitting = false;
+
   token = null;
   folders = null;
   recentlyReadItems = [];
 
   constructor() {
-    mobx.makeAutoObservable(this);
+    makeAutoObservable(this);
   }
 
   *init() {

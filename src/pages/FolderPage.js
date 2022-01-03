@@ -13,15 +13,6 @@ export default observer(function FolderPage(props) {
 
   const query = qs.parse(props.location.search.slice(1));
   const { id: folderId } = query;
-  React.useEffect(() => {
-    const init = async () => {
-      await rootStore.init();
-      await rootStore.loadItems({ folderId });
-    };
-    init();
-  }, [rootStore, folderId]);
-
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const { folders, error } = useFolders();
   useToast(error);
@@ -44,13 +35,12 @@ export default observer(function FolderPage(props) {
       >
         <button
           onClick={() => {
-            setIsSubmitting(true);
-            rootStore.loadItems({ folderId, reloadItems: true });
-            setIsSubmitting(false);
+            localStorage.removeItem(`randomItems:${folderId}`);
+            window.location.reload();
           }}
-          disabled={isSubmitting}
+          disabled={rootStore.isSubmitting}
           className="button"
-          style={{ height: 44, opacity: isSubmitting ? 0.5 : 1, flex: 1 }}
+          style={{ height: 44, opacity: rootStore.isSubmitting ? 0.5 : 1, flex: 1 }}
         >
           reload random items
         </button>
