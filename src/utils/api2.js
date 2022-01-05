@@ -34,7 +34,7 @@ api2.request = async (method, url, args, options) => {
   } catch (error) {
     console.warn(method.toUpperCase(), url, args, error);
     if (error?.response?.status === 401) {
-      window.location.push('/Login');
+      window.location.href = '/#/Login';
     }
     throw error;
   }
