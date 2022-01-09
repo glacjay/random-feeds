@@ -59,13 +59,16 @@ export function useRandomItems({ folderId, isReloading }) {
       const localRandomItems = JSON.parse(localStorage.getItem(`randomItems:${folderId}`) || '[]');
       if (localRandomItems.length > Math.random() * LOADING_COUNT) return localRandomItems;
 
-      for (let i = subscriptions.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [subscriptions[i], subscriptions[j]] = [subscriptions[j], subscriptions[i]];
+      const subscriptionsCopy = [...subscriptions];
+      const usedSubscriptions = [];
+      for (let i = 0; i < LOADING_COUNT && subscriptionsCopy.length > 0; ++i) {
+        const index = Math.floor(subscriptions.length * Math.random());
+        usedSubscriptions.push(subscriptionsCopy[index]);
+        subscriptionsCopy.splice(index, 1);
       }
 
       let newItemsArray = await Promise.all(
-        subscriptions.slice(0, LOADING_COUNT).map(
+        usedSubscriptions.map(
           async (subscription) =>
             (
               await api2.get('/reader/api/0/stream/items/ids', {
