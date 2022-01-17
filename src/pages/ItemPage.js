@@ -59,6 +59,9 @@ export default observer(function ItemPage(props) {
     );
   }, [item]);
 
+  // try to reserve scroll position
+  if (!item) return null;
+
   return (
     <div className="flex-column">
       <a
