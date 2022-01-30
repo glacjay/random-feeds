@@ -44,7 +44,7 @@ function useAllSubscriptions() {
 function useFolderSubscriptions(folderId) {
   const { unreadCounts } = useAllUnreadCounts();
   const { allSubscriptions } = useAllSubscriptions();
-  return allSubscriptions?.filter(
+  return (allSubscriptions || []).filter(
     (sub) =>
       sub.categories?.some((cat) => cat.id === folderId) &&
       unreadCounts?.find((uc) => uc.id === sub.id)?.count > 0,
@@ -68,18 +68,20 @@ export function useRandomItems({ folderId, isReloading }) {
       }
 
       let newItemsArray = await Promise.all(
-        usedSubscriptions.map(
-          async (subscription) =>
-            (
-              await api2.get('/reader/api/0/stream/items/ids', {
-                output: 'json',
-                s: subscription.id,
-                xt: 'user/-/state/com.google/read',
-                r: 'o',
-                n: LOADING_COUNT,
-              })
-            ).itemRefs,
-        ),
+        usedSubscriptions
+          .filter((subscription) => subscription?.id)
+          .map(
+            async (subscription) =>
+              (
+                await api2.get('/reader/api/0/stream/items/ids', {
+                  output: 'json',
+                  s: subscription.id,
+                  xt: 'user/-/state/com.google/read',
+                  r: 'o',
+                  n: LOADING_COUNT,
+                })
+              ).itemRefs,
+          ),
       );
 
       const loadingItems = [];
