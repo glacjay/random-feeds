@@ -61,7 +61,7 @@ export function useRandomItems({ folderId, isReloading }) {
 
       const subscriptionsCopy = [...subscriptions];
       const usedSubscriptions = [];
-      for (let i = 0; i < LOADING_COUNT && subscriptionsCopy.length > 0; ++i) {
+      for (let i = 0; i < 1.6 * LOADING_COUNT && subscriptionsCopy.length > 0; ++i) {
         const index = Math.floor(subscriptionsCopy.length * Math.random());
         usedSubscriptions.push(subscriptionsCopy[index]);
         subscriptionsCopy.splice(index, 1);
