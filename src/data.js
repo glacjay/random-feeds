@@ -36,7 +36,7 @@ function useAllSubscriptions() {
   const token = useToken();
   const result = useQuery('/reader/api/0/subscription/list?output=json', {
     enabled: !!token,
-    select: (data) => data.subscriptions,
+    select: (data) => data.subscriptions.sort((s1, s2) => s1.id.localeCompare(s2.id)),
   });
   return { ...result, allSubscriptions: result.data };
 }
@@ -62,7 +62,7 @@ export function useRandomItems({ folderId, isReloading }) {
       const subscriptionsCopy = [...subscriptions];
       const usedSubscriptions = [];
       for (let i = 0; i < LOADING_COUNT && subscriptionsCopy.length > 0; ++i) {
-        const index = Math.floor(subscriptions.length * Math.random());
+        const index = Math.floor(subscriptionsCopy.length * Math.random());
         usedSubscriptions.push(subscriptionsCopy[index]);
         subscriptionsCopy.splice(index, 1);
       }
