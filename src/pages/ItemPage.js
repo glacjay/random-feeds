@@ -93,7 +93,7 @@ export default observer(function ItemPage(props) {
       <div style={{ height: 100 }} />
       <div
         className="flex-row"
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 7, height: 50 }}
+        style={{ position: 'fixed', bottom: 0, left: 0, zIndex: 7, width: '100vw', height: 50 }}
       >
         <ItemActions
           folderId={query.folderId}
