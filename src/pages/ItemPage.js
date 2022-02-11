@@ -63,13 +63,15 @@ export default observer(function ItemPage(props) {
   if (!item) return null;
 
   return (
-    <div className="flex-column">
+    <div className="flex-column" style={{ overflowX: 'hidden' }}>
       <a
         href={item?.canonical?.[0]?.href}
         target="_blank"
         rel="noopener noreferrer"
         className="flex-column"
         style={{
+          position: 'sticky',
+          top: 0,
           background: 'lightgray',
           padding: 8,
         }}
@@ -86,7 +88,7 @@ export default observer(function ItemPage(props) {
         </div>
       </a>
 
-      <div style={{ margin: 8 }}>
+      <div style={{ position: 'relative', margin: 8, overflowX: 'auto' }}>
         {contentElement || <div dangerouslySetInnerHTML={{ __html: item?.summary?.content }} />}
       </div>
 
