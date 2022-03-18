@@ -59,9 +59,14 @@ export function useRandomItems({ folderId, isReloading }) {
       const localRandomItems = JSON.parse(localStorage.getItem(`randomItems:${folderId}`) || '[]');
       if (localRandomItems.length > Math.random() * LOADING_COUNT) return localRandomItems;
 
-      const subscriptionsCopy = [...subscriptions];
+      const localItemFeeds = new Set(localRandomItems.map((item) => item.feedId));
+      let subscriptionsCopy = subscriptions.filter((sub) => sub?.id && !localItemFeeds.has(sub.id));
+      if (subscriptionsCopy.length < LOADING_COUNT) {
+        subscriptionsCopy = subscriptions.filter((sub) => sub?.id);
+      }
+
       const usedSubscriptions = [];
-      for (let i = 0; i < 1.6 * LOADING_COUNT && subscriptionsCopy.length > 0; ++i) {
+      for (let i = 0; i < LOADING_COUNT && subscriptionsCopy.length > 0; ++i) {
         const index = Math.floor(subscriptionsCopy.length * Math.random());
         usedSubscriptions.push(subscriptionsCopy[index]);
         subscriptionsCopy.splice(index, 1);
@@ -70,17 +75,16 @@ export function useRandomItems({ folderId, isReloading }) {
       let newItemsArray = await Promise.all(
         usedSubscriptions
           .filter((subscription) => subscription?.id)
-          .map(
-            async (subscription) =>
-              (
-                await api2.get('/reader/api/0/stream/items/ids', {
-                  output: 'json',
-                  s: subscription.id,
-                  xt: 'user/-/state/com.google/read',
-                  r: 'o',
-                  n: LOADING_COUNT,
-                })
-              ).itemRefs,
+          .map(async (subscription) =>
+            (
+              await api2.get('/reader/api/0/stream/items/ids', {
+                output: 'json',
+                s: subscription.id,
+                xt: 'user/-/state/com.google/read',
+                r: 'o',
+                n: LOADING_COUNT,
+              })
+            ).itemRefs.map((item) => ({ ...item, feedId: subscription.id })),
           ),
       );
 
@@ -90,16 +94,19 @@ export function useRandomItems({ folderId, isReloading }) {
         const newItems = newItemsArray.shift();
         if (newItems.length > 0) {
           const newItem = newItems.shift();
-          if (!loadingItems.some((item) => item.id === newItem.id)) {
+          if (
+            (isReloading || !localRandomItems.some((item) => item.id === newItem.id)) &&
+            !loadingItems.some((item) => item.id === newItem.id)
+          ) {
             loadingItems.push(newItem);
             addedCount += 1;
-            if (addedCount >= 1.5 * LOADING_COUNT) break;
+            if (addedCount >= LOADING_COUNT) break;
           }
           newItemsArray.push(newItems);
         }
       }
 
-      const randomItems = [...(isReloading ? [] : localRandomItems || []), ...loadingItems].filter(
+      const randomItems = [...(isReloading ? [] : localRandomItems), ...loadingItems].filter(
         (item, pos, self) => self.findIndex((i2) => i2.id === item.id) === pos,
       );
 
