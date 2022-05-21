@@ -53,6 +53,8 @@ function useFolderSubscriptions(folderId) {
 
 export function useRandomItems({ folderId, isReloading }) {
   const subscriptions = useFolderSubscriptions(folderId);
+  const { unreadCounts } = useAllUnreadCounts();
+
   const result = useQuery(
     ['randomItems', folderId],
     async () => {
@@ -66,10 +68,23 @@ export function useRandomItems({ folderId, isReloading }) {
       }
 
       const usedSubscriptions = [];
-      for (let i = 0; i < LOADING_COUNT && subscriptionsCopy.length > 0; ++i) {
-        const index = Math.floor(subscriptionsCopy.length * Math.random());
-        usedSubscriptions.push(subscriptionsCopy[index]);
-        subscriptionsCopy.splice(index, 1);
+      for (
+        let i = 0;
+        usedSubscriptions.length < LOADING_COUNT && subscriptionsCopy.length > 0;
+        i = (i + 1) % subscriptionsCopy.length
+      ) {
+        const subscription = subscriptionsCopy[i];
+        const unreadCount = unreadCounts?.find((uc) => uc.id === subscription.id)?.count;
+        const probability = Math.log1p(unreadCount) / subscriptionsCopy.length;
+        if (!usedSubscriptions.includes(subscription) && Math.random() < probability) {
+          console.log(
+            'xxx',
+            { i, subscription, unreadCount, probability },
+            Math.log1p(unreadCount),
+          );
+          usedSubscriptions.push(subscription);
+          subscriptionsCopy.splice(i, 1);
+        }
       }
 
       let newItemsArray = await Promise.all(
