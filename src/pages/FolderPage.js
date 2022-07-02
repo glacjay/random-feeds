@@ -3,7 +3,13 @@ import { observer } from 'mobx-react';
 import qs from 'qs';
 import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import { useFolders, useFolderUnreadsCount, useItem, useRandomItems } from 'src/data';
+import {
+  useFeedUnreadsCount,
+  useFolders,
+  useFolderUnreadsCount,
+  useItem,
+  useRandomItems,
+} from 'src/data';
 import { useRootStore } from 'src/RootStore';
 import { useToast } from 'src/utils/useToast';
 import ItemActions from 'src/widgets/ItemActions';
@@ -80,6 +86,8 @@ function Item({ folderId, item }) {
   const query = useItem(item);
   item = query.item || item;
 
+  const unreadCount = useFeedUnreadsCount(item.origin?.streamId);
+
   return (
     <div
       style={{
@@ -97,7 +105,7 @@ function Item({ folderId, item }) {
           style={{ marginTop: 8, justifyContent: 'space-between', fontSize: 12, color: 'gray' }}
         >
           <div>
-            {item.origin?.title} | {item.author}
+            {item.origin?.title} ({unreadCount}) | {item.author}
           </div>
           <div>{dayjs(item.updated * 1000).format('YYYY-MM-DD HH:mm')}</div>
         </div>

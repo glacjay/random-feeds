@@ -32,6 +32,11 @@ export function useFolderUnreadsCount(folder) {
   return { ...result, unreadsCount: result.unreadCounts?.find((uc) => uc.id === folderId)?.count };
 }
 
+export function useFeedUnreadsCount(subscriptionId) {
+  const { unreadCounts } = useAllUnreadCounts();
+  return unreadCounts?.find((uc) => uc.id === subscriptionId)?.count;
+}
+
 function useAllSubscriptions() {
   const token = useToken();
   const result = useQuery('/reader/api/0/subscription/list?output=json', {
@@ -77,11 +82,6 @@ export function useRandomItems({ folderId, isReloading }) {
         const unreadCount = unreadCounts?.find((uc) => uc.id === subscription.id)?.count;
         const probability = Math.log1p(unreadCount) / subscriptionsCopy.length;
         if (!usedSubscriptions.includes(subscription) && Math.random() < probability) {
-          console.log(
-            'xxx',
-            { i, subscription, unreadCount, probability },
-            Math.log1p(unreadCount),
-          );
           usedSubscriptions.push(subscription);
           subscriptionsCopy.splice(i, 1);
         }

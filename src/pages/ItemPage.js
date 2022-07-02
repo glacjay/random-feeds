@@ -3,7 +3,7 @@ import HtmlToReact, { Parser as HtmlToReactParser } from 'html-to-react';
 import { observer } from 'mobx-react';
 import qs from 'qs';
 import React, { useMemo } from 'react';
-import { useItem } from 'src/data';
+import { useFeedUnreadsCount, useItem } from 'src/data';
 import { useToast } from 'src/utils/useToast';
 import ItemActions from 'src/widgets/ItemActions';
 
@@ -13,6 +13,8 @@ export default observer(function ItemPage(props) {
 
   const { item, error } = useItem({ id: itemId });
   useToast(error);
+
+  const unreadCount = useFeedUnreadsCount(item?.origin?.streamId);
 
   const contentElement = useMemo(() => {
     if (!item?.summary?.content) return null;
@@ -82,7 +84,7 @@ export default observer(function ItemPage(props) {
           style={{ marginTop: 8, justifyContent: 'space-between', fontSize: 12, color: 'gray' }}
         >
           <div>
-            {item?.origin?.title} | {item?.author}
+            {item?.origin?.title} ({unreadCount}) | {item?.author}
           </div>
           <div>{dayjs(item?.updated * 1000).format('YYYY-MM-DD HH:mm')}</div>
         </div>
