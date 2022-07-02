@@ -87,37 +87,37 @@ export function useRandomItems({ folderId, isReloading }) {
         }
       }
 
-      let newItemsArray = await Promise.all(
+      const newItemsArray = await Promise.all(
         usedSubscriptions
           .filter((subscription) => subscription?.id)
-          .map(async (subscription) =>
-            (
+          .map(async (subscription) => {
+            const unreadCount = unreadCounts?.find((uc) => uc.id === subscription.id)?.count;
+            const loadingCount = Math.ceil(Math.log1p(unreadCount)) + 1;
+            return (
               await api2.get('/reader/api/0/stream/items/ids', {
                 output: 'json',
                 s: subscription.id,
                 xt: 'user/-/state/com.google/read',
                 r: 'o',
-                n: LOADING_COUNT,
+                n: loadingCount,
               })
-            ).itemRefs.map((item) => ({ ...item, feedId: subscription.id })),
-          ),
+            ).itemRefs.map((item) => ({ ...item, feedId: subscription.id }));
+          }),
       );
 
+      const newItems = newItemsArray.flat();
       const loadingItems = [];
       let addedCount = 0;
-      while (newItemsArray.length > 0) {
-        const newItems = newItemsArray.shift();
-        if (newItems.length > 0) {
-          const newItem = newItems.shift();
-          if (
-            (isReloading || !localRandomItems.some((item) => item.id === newItem.id)) &&
-            !loadingItems.some((item) => item.id === newItem.id)
-          ) {
-            loadingItems.push(newItem);
-            addedCount += 1;
-            if (addedCount >= LOADING_COUNT) break;
-          }
-          newItemsArray.push(newItems);
+      while (newItems.length > 0) {
+        const index = Math.floor(Math.random() * newItems.length);
+        const [newItem] = newItems.splice(index, 1);
+        if (
+          (isReloading || !localRandomItems.some((item) => item.id === newItem.id)) &&
+          !loadingItems.some((item) => item.id === newItem.id)
+        ) {
+          loadingItems.push(newItem);
+          addedCount += 1;
+          if (addedCount >= LOADING_COUNT) break;
         }
       }
 
