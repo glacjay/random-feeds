@@ -73,26 +73,29 @@ export function useRandomItems({ folderId, isReloading }) {
       }
 
       const usedSubscriptions = [];
+      let bottom = Math.log(1.7);
       for (
         let i = 0;
         usedSubscriptions.length < LOADING_COUNT && subscriptionsCopy.length > 0;
         i = (i + 1) % subscriptionsCopy.length
       ) {
         const subscription = subscriptionsCopy[i];
-        const unreadCount = unreadCounts?.find((uc) => uc.id === subscription.id)?.count;
-        const probability = Math.log1p(unreadCount) / subscriptionsCopy.length;
+        const unreadCount = unreadCounts?.find((uc) => uc.id === subscription.id)?.count || 0;
+        const probability =
+          (Math.abs(Math.log(unreadCount + 1) / bottom - 3) + 1) / subscriptionsCopy.length;
         if (!usedSubscriptions.includes(subscription) && Math.random() < probability) {
           usedSubscriptions.push(subscription);
           subscriptionsCopy.splice(i, 1);
         }
       }
 
+      bottom = Math.log(subscriptionsCopy.length + 1);
       const newItemsArray = await Promise.all(
         usedSubscriptions
           .filter((subscription) => subscription?.id)
           .map(async (subscription) => {
             const unreadCount = unreadCounts?.find((uc) => uc.id === subscription.id)?.count;
-            const loadingCount = Math.ceil(Math.log1p(unreadCount)) + 1;
+            const loadingCount = Math.ceil(Math.log(unreadCount) / bottom) + 1;
             return (
               await api2.get('/reader/api/0/stream/items/ids', {
                 output: 'json',
