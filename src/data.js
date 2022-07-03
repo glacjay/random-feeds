@@ -82,7 +82,7 @@ export function useRandomItems({ folderId, isReloading }) {
         const subscription = subscriptionsCopy[i];
         const unreadCount = unreadCounts?.find((uc) => uc.id === subscription.id)?.count || 0;
         const probability =
-          (Math.abs(Math.log(unreadCount + 1) / bottom - 3) + 1) / subscriptionsCopy.length;
+          (Math.abs(Math.log(unreadCount + 1) / bottom - 4) + 1) / subscriptionsCopy.length;
         if (!usedSubscriptions.includes(subscription) && Math.random() < probability) {
           usedSubscriptions.push(subscription);
           subscriptionsCopy.splice(i, 1);
