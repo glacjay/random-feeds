@@ -1,6 +1,7 @@
 import { useQuery } from 'react-query';
 
 import api2 from './utils/api2';
+import { useToast } from './utils/useToast';
 
 const LOADING_COUNT = 7;
 
@@ -14,6 +15,7 @@ export function useFolders() {
     enabled: !!token,
     select: (data) => data.tags.filter((tag) => /\/label\//.test(tag.id)),
   });
+  useToast(result.error);
   return { ...result, folders: result.data };
 }
 

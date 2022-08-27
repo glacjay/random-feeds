@@ -31,8 +31,9 @@ function TotalUnreadsCount() {
 }
 
 function Folders() {
-  const { folders, error } = useFolders();
-  useToast(error);
+  const { folders, isFetching } = useFolders();
+
+  if (isFetching) return 'loading...';
 
   return (
     <Fragment>
