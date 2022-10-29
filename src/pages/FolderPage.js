@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
 import qs from 'qs';
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   useFeedUnreadsCount,
@@ -15,6 +15,10 @@ import { useToast } from 'src/utils/useToast';
 import ItemActions from 'src/widgets/ItemActions';
 
 export default observer(function FolderPage(props) {
+  useEffect(() => {
+    window.scrollTo({ y: 0 });
+  }, []);
+
   const rootStore = useRootStore();
 
   const query = qs.parse(props.location.search.slice(1));

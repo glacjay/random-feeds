@@ -8,7 +8,7 @@ import api2 from 'src/utils/api2';
 
 export default observer(function App() {
   return (
-    <div>
+    <div style={{ lineHeight: 1.8, fontSize: 18 }}>
       <ToastContainer
         autoClose={4000}
         closeButton={false}
