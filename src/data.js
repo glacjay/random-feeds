@@ -139,13 +139,17 @@ export function useRandomItems({ folderId, isReloading }) {
 }
 
 export function useItem(item) {
+  const cachedItem = JSON.parse(localStorage.getItem(`item:${item.id}`) || 'null');
+
+  const enabled = !cachedItem && !item.crawlTimeMsec;
   const result = useQuery(`/reader/api/0/stream/items/contents?output=json&i=${item.id}`, {
-    enabled: !item.crawlTimeMsec,
+    enabled,
     select: (data) => data.items[0],
   });
-  return {
-    ...result,
-    item: item.crawlTimeMsec
+
+  const newItem =
+    cachedItem ||
+    (item.crawlTimeMsec
       ? item
       : {
           ...result.data,
@@ -154,6 +158,11 @@ export function useItem(item) {
           // - some sort of url path: from loading item detail
           // I'd prefer the former.
           id: item.id,
-        },
-  };
+        });
+
+  if (!cachedItem && newItem.crawlTimeMsec) {
+    localStorage.setItem(`item:${item.id}`, JSON.stringify(newItem));
+  }
+
+  return { ...result, item: newItem };
 }

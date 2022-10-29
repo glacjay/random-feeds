@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
 import qs from 'qs';
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   useFeedUnreadsCount,
@@ -27,6 +27,16 @@ export default observer(function FolderPage(props) {
   const { folders, error } = useFolders();
   useToast(error);
   const folder = folders?.find((f) => f.id === folderId);
+
+  const reloadItems = useCallback(() => {
+    const items = JSON.parse(localStorage.getItem(`randomItems:${folderId}`) || '[]');
+    for (const item of items) {
+      localStorage.removeItem(`item:${item.id}`);
+    }
+    localStorage.removeItem(`randomItems:${folderId}`);
+    setTimeout(() => window.location.reload(), 500);
+  }, [folderId]);
+
   if (!folder) return null;
 
   return (
@@ -44,10 +54,7 @@ export default observer(function FolderPage(props) {
         style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 7, height: 50 }}
       >
         <button
-          onClick={() => {
-            localStorage.removeItem(`randomItems:${folderId}`);
-            window.location.reload();
-          }}
+          onClick={reloadItems}
           disabled={rootStore.isSubmitting}
           className="button"
           style={{ height: 44, opacity: rootStore.isSubmitting ? 0.5 : 1, flex: 1 }}

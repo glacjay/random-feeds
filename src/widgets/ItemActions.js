@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { useRootStore } from 'src/RootStore';
 import api2 from 'src/utils/api2';
 
-export default observer(function ItemActions(props) {
+function _ItemActions(props) {
   const queryClient = useQueryClient();
   const rootStore = useRootStore();
   const { folderId, item } = props;
@@ -16,6 +16,7 @@ export default observer(function ItemActions(props) {
     const items = JSON.parse(localStorage.getItem(key) || '[]');
     localStorage.setItem(key, JSON.stringify(items.filter((it) => it.id !== item.id)));
     queryClient.invalidateQueries(['randomItems', folderId]);
+    localStorage.removeItem(`item:${item.id}`);
   }, [queryClient, folderId, item?.id]);
 
   const markAsRead = useCallback(() => {
@@ -81,4 +82,5 @@ export default observer(function ItemActions(props) {
       </button>
     </Fragment>
   );
-});
+}
+export default observer(_ItemActions);
