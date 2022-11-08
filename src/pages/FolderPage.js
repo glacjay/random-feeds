@@ -16,7 +16,7 @@ import ItemActions from 'src/widgets/ItemActions';
 
 export default observer(function FolderPage(props) {
   useEffect(() => {
-    window.scrollTo({ y: 0 });
+    setTimeout(() => window.scrollTo({ y: 0 }), 777);
   }, []);
 
   const rootStore = useRootStore();

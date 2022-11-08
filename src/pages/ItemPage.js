@@ -94,10 +94,17 @@ export default observer(function ItemPage(props) {
         {contentElement || <div dangerouslySetInnerHTML={{ __html: item?.summary?.content }} />}
       </div>
 
-      <div style={{ height: 100 }} />
+      <div style={{ height: 'calc(100px + env(safe-area-inset-bottom))' }} />
       <div
         className="flex-row"
-        style={{ position: 'fixed', bottom: 0, left: 0, zIndex: 7, width: '100vw', height: 50 }}
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          zIndex: 7,
+          width: '100vw',
+          height: 'calc(50px + env(safe-area-inset-bottom))',
+        }}
       >
         <ItemActions
           folderId={query.folderId}
