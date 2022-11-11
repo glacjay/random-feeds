@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
 import qs from 'qs';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   useFeedUnreadsCount,
   useFolders,
@@ -15,9 +15,10 @@ import { useToast } from 'src/utils/useToast';
 import ItemActions from 'src/widgets/ItemActions';
 
 export default observer(function FolderPage(props) {
+  const { pathname } = useLocation();
   useEffect(() => {
-    setTimeout(() => window.scrollTo({ y: 0 }), 777);
-  }, []);
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   const rootStore = useRootStore();
 
