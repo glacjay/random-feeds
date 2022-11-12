@@ -1,51 +1,55 @@
-import { action } from 'mobx';
+import { runInAction } from 'mobx';
 import { observer } from 'mobx-react';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useRootStore } from 'src/RootStore';
 import api2 from 'src/utils/api2';
 
 export default observer(function LoginPage(props) {
+  const history = useHistory();
   const rootStore = useRootStore();
 
   const [username, setUsername] = useState(null);
   const [password, setPassword] = useState(null);
 
-  const login = action(async () => {
-    try {
-      rootStore.isSubmitting = true;
+  const login = useCallback(() => {
+    runInAction(async () => {
+      try {
+        rootStore.isSubmitting = true;
 
-      const result = await api2.post('/accounts/ClientLogin', {
-        Email: username,
-        Passwd: password,
-      });
-
-      const json = {};
-      result
-        .split('\n')
-        .filter((l) => l)
-        .forEach((line) => {
-          const idx = line.indexOf('=');
-          if (idx > 0) {
-            json[line.substr(0, idx)] = line.substr(idx + 1);
-          } else {
-            json[line] = true;
-          }
+        const result = await api2.post('/accounts/ClientLogin', {
+          Email: username,
+          Passwd: password,
         });
-      if (!json.Auth) {
-        throw new Error('account or password incorrect');
-      }
 
-      const token = json.Auth;
-      localStorage.setItem('token', token);
-      props.history.goBack();
-    } catch (ex) {
-      console.warn('LoginPage.login error:', ex);
-      toast(`login failed: ${ex}`);
-    } finally {
-      rootStore.isSubmitting = false;
-    }
-  });
+        const json = {};
+        result
+          .split('\n')
+          .filter((l) => l)
+          .forEach((line) => {
+            const idx = line.indexOf('=');
+            if (idx > 0) {
+              json[line.substr(0, idx)] = line.substr(idx + 1);
+            } else {
+              json[line] = true;
+            }
+          });
+        if (!json.Auth) {
+          throw new Error('account or password incorrect');
+        }
+
+        const token = json.Auth;
+        localStorage.setItem('token', token);
+        history.goBack();
+      } catch (ex) {
+        console.warn('LoginPage.login error:', ex);
+        toast(`login failed: ${ex}`);
+      } finally {
+        rootStore.isSubmitting = false;
+      }
+    });
+  }, [history, password, rootStore, username]);
 
   return (
     <div

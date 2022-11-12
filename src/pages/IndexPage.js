@@ -1,16 +1,19 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { useQuery } from 'react-query';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useFolders, useFolderUnreadsCount, useToken } from 'src/data';
 import { useToast } from 'src/utils/useToast';
 
-export default function IndexPage(props) {
+export default function IndexPage() {
+  const history = useHistory();
   const token = useToken();
 
-  if (!token) {
-    props.history.push('/Login');
-    return null;
-  }
+  useEffect(() => {
+    if (!token) {
+      history.push('/Login');
+      return null;
+    }
+  }, [history, token]);
 
   return (
     <div className="flex-column" style={{ minHeight: '100vh' }}>
