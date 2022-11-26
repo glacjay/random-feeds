@@ -2,9 +2,10 @@ import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { lruStorage } from 'src/data';
 
 export default observer(function FolderPage() {
-  const recentlyReadItems = JSON.parse(localStorage.getItem('recentlyReadItems') || '[]');
+  const recentlyReadItems = JSON.parse(lruStorage.get('recentlyReadItems') || '[]');
 
   return (
     <div className="flex-column" style={{ paddingBottom: 4 }}>

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import qs from 'qs';
+import { lruStorage } from 'src/data';
 
 const api2 = {};
 
@@ -14,7 +15,7 @@ api2.request = async (method, url, args, options) => {
       ...args,
     };
 
-    const token = await localStorage.getItem('token');
+    const token = await lruStorage.get('token');
     const headers = {
       ...(token ? { Authorization: `GoogleLogin auth=${token}` } : {}),
     };

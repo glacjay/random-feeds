@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import React, { Fragment, useCallback } from 'react';
 import { useQueryClient } from 'react-query';
 import { toast } from 'react-toastify';
+import { lruStorage } from 'src/data';
 import { useRootStore } from 'src/RootStore';
 import api2 from 'src/utils/api2';
 
@@ -13,10 +14,9 @@ function _ItemActions(props) {
 
   const removeItem = useCallback(() => {
     const key = `randomItems:${folderId}`;
-    const items = JSON.parse(localStorage.getItem(key) || '[]');
-    localStorage.setItem(key, JSON.stringify(items.filter((it) => it.id !== item.id)));
+    const items = JSON.parse(lruStorage.get(key) || '[]');
+    lruStorage.set(key, JSON.stringify(items.filter((it) => it.id !== item.id)));
     queryClient.invalidateQueries(['randomItems', folderId]);
-    localStorage.removeItem(`item:${item.id}`);
   }, [queryClient, folderId, item?.id]);
 
   const markAsRead = useCallback(() => {
@@ -30,9 +30,9 @@ function _ItemActions(props) {
 
         const recentlyReadItems = [
           item,
-          ...JSON.parse(localStorage.getItem('recentlyReadItems') || '[]'),
+          ...JSON.parse(lruStorage.get('recentlyReadItems') || '[]'),
         ].slice(0, 42);
-        localStorage.setItem('recentlyReadItems', JSON.stringify(recentlyReadItems));
+        lruStorage.set('recentlyReadItems', JSON.stringify(recentlyReadItems));
 
         removeItem();
         props.history?.goBack?.();
@@ -73,7 +73,10 @@ function _ItemActions(props) {
       </a>
 
       <button
-        onClick={removeItem}
+        onClick={() => {
+          removeItem();
+          props.history?.goBack?.();
+        }}
         disabled={rootStore.isSubmitting}
         className="button"
         style={{ opacity: rootStore.isSubmitting ? 0.5 : 1, ...props.buttonStyle }}

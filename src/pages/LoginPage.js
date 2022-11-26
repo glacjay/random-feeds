@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { lruStorage } from 'src/data';
 import { useRootStore } from 'src/RootStore';
 import api2 from 'src/utils/api2';
 
@@ -40,7 +41,7 @@ export default observer(function LoginPage(props) {
         }
 
         const token = json.Auth;
-        localStorage.setItem('token', token);
+        lruStorage.set('token', token);
         history.goBack();
       } catch (ex) {
         console.warn('LoginPage.login error:', ex);

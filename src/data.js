@@ -1,3 +1,4 @@
+import { LocalStorageLRU } from '@cocalc/local-storage-lru';
 import { useQuery } from 'react-query';
 
 import api2 from './utils/api2';
@@ -6,8 +7,12 @@ import { useToast } from './utils/useToast';
 const LOADING_COUNT = 7;
 
 export function useToken() {
-  return localStorage.getItem('token');
+  return lruStorage.get('token');
 }
+
+export const lruStorage = new LocalStorageLRU({
+  isCandidate: (key) => key?.startsWith('item:'),
+});
 
 export function useFolders() {
   const token = useToken();
@@ -65,7 +70,7 @@ export function useRandomItems({ folderId, isReloading }) {
   const result = useQuery(
     ['randomItems', folderId],
     async () => {
-      const localRandomItems = JSON.parse(localStorage.getItem(`randomItems:${folderId}`) || '[]');
+      const localRandomItems = JSON.parse(lruStorage.get(`randomItems:${folderId}`) || '[]');
       if (localRandomItems.length > Math.random() * LOADING_COUNT) return localRandomItems;
 
       const localItemFeeds = new Set(localRandomItems.map((item) => item.feedId));
@@ -130,7 +135,7 @@ export function useRandomItems({ folderId, isReloading }) {
         (item, pos, self) => self.findIndex((i2) => i2.id === item.id) === pos,
       );
 
-      localStorage.setItem(`randomItems:${folderId}`, JSON.stringify(randomItems));
+      lruStorage.set(`randomItems:${folderId}`, JSON.stringify(randomItems));
       return randomItems;
     },
     { enabled: subscriptions?.length > 0 },
@@ -139,7 +144,7 @@ export function useRandomItems({ folderId, isReloading }) {
 }
 
 export function useItem(item) {
-  const cachedItem = JSON.parse(localStorage.getItem(`item:${item.id}`) || 'null');
+  const cachedItem = JSON.parse(lruStorage.get(`item:${item.id}`) || 'null');
 
   const enabled = !cachedItem && !item.crawlTimeMsec;
   const result = useQuery(`/reader/api/0/stream/items/contents?output=json&i=${item.id}`, {
@@ -161,7 +166,7 @@ export function useItem(item) {
         });
 
   if (!cachedItem && newItem.crawlTimeMsec) {
-    localStorage.setItem(`item:${item.id}`, JSON.stringify(newItem));
+    lruStorage.set(`item:${item.id}`, JSON.stringify(newItem));
   }
 
   return { ...result, item: newItem };

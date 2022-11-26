@@ -4,6 +4,7 @@ import qs from 'qs';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
+  lruStorage,
   useFeedUnreadsCount,
   useFolders,
   useFolderUnreadsCount,
@@ -17,7 +18,7 @@ import ItemActions from 'src/widgets/ItemActions';
 export default observer(function FolderPage(props) {
   const { pathname } = useLocation();
   useEffect(() => {
-    window.scrollTo(0, 0);
+    setTimeout(() => window.scrollTo(0, 0), 222);
   }, [pathname]);
 
   const rootStore = useRootStore();
@@ -30,11 +31,7 @@ export default observer(function FolderPage(props) {
   const folder = folders?.find((f) => f.id === folderId);
 
   const reloadItems = useCallback(() => {
-    const items = JSON.parse(localStorage.getItem(`randomItems:${folderId}`) || '[]');
-    for (const item of items) {
-      localStorage.removeItem(`item:${item.id}`);
-    }
-    localStorage.removeItem(`randomItems:${folderId}`);
+    lruStorage.delete(`randomItems:${folderId}`);
     setTimeout(() => window.location.reload(), 500);
   }, [folderId]);
 

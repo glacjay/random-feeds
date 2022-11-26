@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { Link, useHistory } from 'react-router-dom';
-import { useFolders, useFolderUnreadsCount, useToken } from 'src/data';
+import { lruStorage, useFolders, useFolderUnreadsCount, useToken } from 'src/data';
 import { useToast } from 'src/utils/useToast';
 
 export default function IndexPage() {
@@ -62,7 +62,7 @@ function Folder({ folder }) {
 }
 
 function RecentlyReadItems() {
-  const recentlyReadItems = JSON.parse(localStorage.getItem('recentlyReadItems') || '[]');
+  const recentlyReadItems = JSON.parse(lruStorage.get('recentlyReadItems') || '[]');
 
   return (
     <Fragment>
