@@ -1,5 +1,6 @@
 import { LocalStorageLRU } from '@cocalc/local-storage-lru';
 import { useQuery } from 'react-query';
+import { toast } from 'react-toastify';
 
 import api2 from './utils/api2';
 import { useToast } from './utils/useToast';
@@ -11,7 +12,13 @@ export function useToken() {
 }
 
 export const lruStorage = new LocalStorageLRU({
-  isCandidate: (key) => key?.startsWith('item:'),
+  isCandidate: (key) => {
+    const result = !!key?.startsWith('item:');
+    if (!result) {
+      toast(`not a candidate: ${key}`);
+    }
+    return result;
+  },
 });
 
 export function useFolders() {

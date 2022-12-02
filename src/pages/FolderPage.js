@@ -39,9 +39,11 @@ export default observer(function FolderPage(props) {
 
   return (
     <div className="flex-column" style={{ paddingBottom: 4 }}>
-      <div style={{ margin: '4px 4px 0' }}>
+      <div className="flex-row" style={{ margin: '4px 4px 0' }}>
         {folder?.id?.replace(/.*\//g, '')}：<RandomItemsCount folder={folder} />/
         <FolderUnreadsCount folder={folder} />
+        <div style={{ flex: 1 }} />
+        {localStorage.length}
       </div>
 
       <RandomItems folder={folder} />
