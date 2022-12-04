@@ -12,6 +12,7 @@ export function useToken() {
 }
 
 export const lruStorage = new LocalStorageLRU({
+  maxSize: 222,
   isCandidate: (key) => {
     const result = !!key?.startsWith('item:');
     if (!result) {
