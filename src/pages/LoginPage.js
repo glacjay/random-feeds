@@ -3,13 +3,14 @@ import { observer } from 'mobx-react';
 import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { lruStorage } from 'src/data';
+import { lruStorage, useToken } from 'src/data';
 import { useRootStore } from 'src/RootStore';
 import api2 from 'src/utils/api2';
 
 export default observer(function LoginPage(props) {
   const history = useHistory();
   const rootStore = useRootStore();
+  const token = useToken();
 
   const [username, setUsername] = useState(null);
   const [password, setPassword] = useState(null);
@@ -79,6 +80,8 @@ export default observer(function LoginPage(props) {
       >
         login
       </button>
+
+      <div style={{ gridColumn: '1 / span 2' }}>{token || 'NONE'}</div>
     </div>
   );
 });

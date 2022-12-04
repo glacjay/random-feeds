@@ -84,7 +84,7 @@ export default observer(function ItemPage(props) {
           style={{ marginTop: 8, justifyContent: 'space-between', fontSize: 12, color: 'gray' }}
         >
           <div>
-            {item?.origin?.title} ({unreadCount}) | {item?.author}
+            ({unreadCount}) {item?.origin?.title} | {item?.author}
           </div>
           <div>{dayjs(item?.updated * 1000).format('YYYY-MM-DD HH:mm')}</div>
         </div>
