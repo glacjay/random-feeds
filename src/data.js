@@ -1,6 +1,4 @@
-import { LocalStorageLRU } from '@cocalc/local-storage-lru';
 import { useQuery } from 'react-query';
-import { toast } from 'react-toastify';
 
 import api2 from './utils/api2';
 import { useToast } from './utils/useToast';
