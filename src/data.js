@@ -11,16 +11,43 @@ export function useToken() {
   return lruStorage.get('token');
 }
 
-export const lruStorage = new LocalStorageLRU({
-  maxSize: 222,
-  isCandidate: (key) => {
-    const result = !!key?.startsWith('item:');
-    if (!result) {
-      toast(`not a candidate: ${key}`);
+// export const lruStorage = new LocalStorageLRU({
+//   maxSize: 222,
+//   isCandidate: (key) => {
+//     const result = !!key?.startsWith('item:');
+//     if (!result) {
+//       toast(`not a candidate: ${key}`);
+//     }
+//     return result;
+//   },
+// });
+
+class MyLocalStorage {
+  get(key) {
+    return localStorage.getItem(key);
+  }
+
+  delete(key) {
+    localStorage.removeItem(key);
+  }
+
+  set(key, value) {
+    if (localStorage.length > 222) {
+      for (let i = 7; i >= 0; ) {
+        const key = localStorage.key(Math.random() * localStorage.length);
+        if (key?.startsWith('item:')) {
+          console.log('xxx', { key });
+          localStorage.removeItem(key);
+          i--;
+        }
+      }
     }
-    return result;
-  },
-});
+
+    localStorage.setItem(key, value);
+  }
+}
+
+export const lruStorage = new MyLocalStorage();
 
 export function useFolders() {
   const token = useToken();

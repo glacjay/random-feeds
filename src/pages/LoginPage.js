@@ -81,7 +81,7 @@ export default observer(function LoginPage(props) {
         login
       </button>
 
-      <div style={{ gridColumn: '1 / span 2' }}>{token || 'NONE'}</div>
+      <div style={{ gridColumn: '1 / span 2' }}>{token?.length}</div>
     </div>
   );
 });
