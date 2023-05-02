@@ -10,7 +10,7 @@ import api2 from 'src/utils/api2';
 function _ItemActions(props) {
   const queryClient = useQueryClient();
   const rootStore = useRootStore();
-  const { folderId, item } = props;
+  const { folderId, item, router } = props;
 
   const removeItem = useCallback(() => {
     const key = `randomItems:${folderId}`;
@@ -35,7 +35,7 @@ function _ItemActions(props) {
         lruStorage.set('recentlyReadItems', JSON.stringify(recentlyReadItems));
 
         removeItem();
-        props.history?.goBack?.();
+        router?.back?.();
       } catch (ex) {
         console.warn('ItemActions.markAsRead error:', ex);
         toast(`mark as read error: ${ex}`);
@@ -43,7 +43,7 @@ function _ItemActions(props) {
         rootStore.isSubmitting = false;
       }
     });
-  }, [rootStore, props.history, removeItem, item]);
+  }, [rootStore, item, removeItem, router]);
 
   if (!item?.id) return null;
 
@@ -75,7 +75,7 @@ function _ItemActions(props) {
       <button
         onClick={() => {
           removeItem();
-          props.history?.goBack?.();
+          router?.back?.();
         }}
         disabled={rootStore.isSubmitting}
         className="button"

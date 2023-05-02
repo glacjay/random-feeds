@@ -1,14 +1,15 @@
 import dayjs from 'dayjs';
 import HtmlToReact, { Parser as HtmlToReactParser } from 'html-to-react';
 import { observer } from 'mobx-react';
-import qs from 'qs';
+import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
 import { useFeedUnreadsCount, useItem } from 'src/data';
 import { useToast } from 'src/utils/useToast';
 import ItemActions from 'src/widgets/ItemActions';
 
 export default observer(function ItemPage(props) {
-  const query = qs.parse(props.location.search.slice(1));
+  const router = useRouter();
+  const { query } = router;
   const { id: itemId } = query;
 
   const { item, error } = useItem({ id: itemId });
@@ -110,7 +111,7 @@ export default observer(function ItemPage(props) {
         <ItemActions
           folderId={query.folderId}
           item={item}
-          history={props.history}
+          router={router}
           buttonStyle={{ flex: 1, height: 44 }}
         />
       </div>
