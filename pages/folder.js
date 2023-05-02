@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 import qs from 'qs';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import {
-  lruStorage,
   useFeedUnreadsCount,
   useFolders,
   useFolderUnreadsCount,
@@ -32,7 +31,7 @@ export default observer(function FolderPage(props) {
   const folder = folders?.find((f) => f.id === folderId);
 
   const reloadItems = useCallback(() => {
-    lruStorage.delete(`randomItems:${folderId}`);
+    localStorage.removeItem(`randomItems:${folderId}`);
     setTimeout(() => window.location.reload(), 500);
   }, [folderId]);
 

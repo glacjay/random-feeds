@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
+import Link from 'next/link';
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { lruStorage } from 'src/data';
+import useLocalStorage from 'use-local-storage';
 
 export default observer(function FolderPage() {
-  const recentlyReadItems = JSON.parse(lruStorage.get('recentlyReadItems') || '[]');
+  const recentlyReadItems = useLocalStorage('recentlyReadItems');
 
   return (
     <div className="flex-column" style={{ paddingBottom: 4 }}>
@@ -24,7 +24,7 @@ export default observer(function FolderPage() {
               padding: 8,
             }}
           >
-            <Link to={`/Item?id=${item.id}`}>
+            <Link href={`/item?id=${item.id}`}>
               <div>{item.title}</div>
               <div
                 className="flex-row align-center"

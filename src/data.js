@@ -34,17 +34,6 @@ class MyLocalStorage {
 
   set(key, value) {
     if (typeof window === 'undefined') return;
-    if (localStorage.length > 222) {
-      for (let i = 7; i >= 0; ) {
-        const key = localStorage.key(Math.random() * localStorage.length);
-        if (key?.startsWith('item:')) {
-          console.log('xxx', { key });
-          localStorage.removeItem(key);
-          i--;
-        }
-      }
-    }
-
     localStorage.setItem(key, value);
   }
 }
@@ -104,10 +93,11 @@ export function useRandomItems({ folderId, isReloading }) {
   const subscriptions = useFolderSubscriptions(folderId);
   const { unreadCounts } = useAllUnreadCounts();
 
+  const [localRandomItems, setLocalRandomItems] = useLocalStorage(`randomItems:${folderId}`, []);
+
   const result = useQuery(
     ['randomItems', folderId],
     async () => {
-      const localRandomItems = JSON.parse(lruStorage.get(`randomItems:${folderId}`) || '[]');
       if (localRandomItems.length > Math.random() * LOADING_COUNT) return localRandomItems;
 
       const localItemFeeds = new Set(localRandomItems.map((item) => item.feedId));
@@ -172,7 +162,7 @@ export function useRandomItems({ folderId, isReloading }) {
         (item, pos, self) => self.findIndex((i2) => i2.id === item.id) === pos,
       );
 
-      lruStorage.set(`randomItems:${folderId}`, JSON.stringify(randomItems));
+      setLocalRandomItems(randomItems);
       return randomItems;
     },
     { enabled: subscriptions?.length > 0 },
@@ -181,7 +171,7 @@ export function useRandomItems({ folderId, isReloading }) {
 }
 
 export function useItem(item) {
-  const cachedItem = JSON.parse(lruStorage.get(`item:${item.id}`) || 'null');
+  const [cachedItem, setCachedItem] = useLocalStorage(`item:${item.id}`);
 
   const enabled = !cachedItem && !item.crawlTimeMsec;
   const result = useQuery(`/reader/api/0/stream/items/contents?output=json&i=${item.id}`, {
@@ -203,7 +193,18 @@ export function useItem(item) {
         });
 
   if (!cachedItem && newItem.crawlTimeMsec) {
-    lruStorage.set(`item:${item.id}`, JSON.stringify(newItem));
+    setCachedItem(newItem);
+
+    if (localStorage.length > 222) {
+      for (let i = 7; i >= 0; ) {
+        const key = localStorage.key(Math.random() * localStorage.length);
+        if (key?.startsWith('item:')) {
+          console.log('xxx', { key });
+          localStorage.removeItem(key);
+          i--;
+        }
+      }
+    }
   }
 
   return { ...result, item: newItem };

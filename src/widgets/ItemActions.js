@@ -3,21 +3,22 @@ import { observer } from 'mobx-react';
 import React, { Fragment, useCallback } from 'react';
 import { useQueryClient } from 'react-query';
 import { toast } from 'react-toastify';
-import { lruStorage } from 'src/data';
 import { useRootStore } from 'src/RootStore';
 import api2 from 'src/utils/api2';
+import useLocalStorage from 'use-local-storage';
 
 function _ItemActions(props) {
   const queryClient = useQueryClient();
   const rootStore = useRootStore();
   const { folderId, item, router } = props;
 
+  const [randomItems, setRandomItems] = useLocalStorage(`randomItems:${folderId}`, []);
+  const [recentlyItems, setRecentlyItems] = useLocalStorage('recentlyReadItems', []);
+
   const removeItem = useCallback(() => {
-    const key = `randomItems:${folderId}`;
-    const items = JSON.parse(lruStorage.get(key) || '[]');
-    lruStorage.set(key, JSON.stringify(items.filter((it) => it.id !== item.id)));
+    setRandomItems(randomItems.filter((it) => it.id !== item.id));
     queryClient.invalidateQueries(['randomItems', folderId]);
-  }, [queryClient, folderId, item?.id]);
+  }, [setRandomItems, randomItems, queryClient, folderId, item.id]);
 
   const markAsRead = useCallback(() => {
     runInAction(async () => {
@@ -28,11 +29,8 @@ function _ItemActions(props) {
           a: 'user/-/state/com.google/read',
         });
 
-        const recentlyReadItems = [
-          item,
-          ...JSON.parse(lruStorage.get('recentlyReadItems') || '[]'),
-        ].slice(0, 42);
-        lruStorage.set('recentlyReadItems', JSON.stringify(recentlyReadItems));
+        const recentlyReadItems = [item, ...recentlyItems].slice(0, 42);
+        setRecentlyItems(recentlyReadItems);
 
         removeItem();
         router?.back?.();
@@ -43,7 +41,7 @@ function _ItemActions(props) {
         rootStore.isSubmitting = false;
       }
     });
-  }, [rootStore, item, removeItem, router]);
+  }, [rootStore, item, recentlyItems, setRecentlyItems, removeItem, router]);
 
   if (!item?.id) return null;
 

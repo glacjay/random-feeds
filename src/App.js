@@ -2,7 +2,7 @@ import 'react-toastify/dist/ReactToastify.min.css';
 
 import { observer } from 'mobx-react';
 import React from 'react';
-import { HashRouter, Route, Switch, useHistory } from 'react-router-dom';
+import { HashRouter, Switch, useHistory } from 'react-router-dom';
 import { cssTransition, ToastContainer } from 'react-toastify';
 import api2 from 'src/utils/api2';
 
@@ -26,12 +26,7 @@ export default observer(function App() {
         <HistoryGetter />
 
         <div style={{ margin: '0 auto', maxWidth: 666 }}>
-          <Switch>
-            <Route
-              path="/RecentlyReadItems"
-              component={require('src/pages/RecentlyReadItemsPage').default}
-            />
-          </Switch>
+          <Switch></Switch>
         </div>
       </HashRouter>
     </div>
