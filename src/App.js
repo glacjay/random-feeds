@@ -33,9 +33,6 @@ export default observer(function App() {
             />
             <Route path="/Folder" component={require('src/pages/FolderPage').default} />
             <Route path="/Item" component={require('src/pages/ItemPage').default} />
-
-            <Route path="/Login" component={require('src/pages/LoginPage').default} />
-            <Route path="/" component={require('src/pages/IndexPage').default} />
           </Switch>
         </div>
       </HashRouter>

@@ -1,6 +1,6 @@
+import Link from 'next/link';
 import React, { Fragment } from 'react';
 import { useQuery } from 'react-query';
-import { Link } from 'react-router-dom';
 import { lruStorage, useFolders, useFolderUnreadsCount, useToken } from 'src/data';
 import { useToast } from 'src/utils/useToast';
 
@@ -8,7 +8,7 @@ export default function IndexPage() {
   const token = useToken();
 
   if (!token) {
-    return <Link to={`/Login`}>Login</Link>;
+    return <Link href="/login">Login</Link>;
   }
 
   return (
@@ -49,7 +49,7 @@ function Folder({ folder }) {
 
   return (
     <Link
-      to={`/Folder?id=${folder.id}`}
+      href={`/Folder?id=${folder.id}`}
       style={{ margin: '4px 4px 0', border: '1px solid black', borderRadius: 4, padding: 8 }}
     >
       {folder.id?.replace(/.*\//g, '')} ({unreadsCount})
@@ -66,7 +66,7 @@ function RecentlyReadItems() {
         <Fragment>
           <div style={{ flex: 1, minHeight: 16 }} />
           <Link
-            to={`/RecentlyReadItems`}
+            href="/RecentlyReadItems"
             style={{ margin: '4px 4px', border: '1px solid black', borderRadius: 4, padding: 8 }}
           >
             最近已读文章 ({recentlyReadItems.length})

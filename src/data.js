@@ -1,4 +1,5 @@
 import { useQuery } from 'react-query';
+import useLocalStorage from 'use-local-storage';
 
 import api2 from './utils/api2';
 import { useToast } from './utils/useToast';
@@ -6,7 +7,8 @@ import { useToast } from './utils/useToast';
 const LOADING_COUNT = 7;
 
 export function useToken() {
-  return lruStorage.get('token');
+  const [token] = useLocalStorage('token');
+  return token;
 }
 
 // export const lruStorage = new LocalStorageLRU({
@@ -22,14 +24,17 @@ export function useToken() {
 
 class MyLocalStorage {
   get(key) {
+    if (typeof window === 'undefined') return null;
     return localStorage.getItem(key);
   }
 
   delete(key) {
+    if (typeof window === 'undefined') return;
     localStorage.removeItem(key);
   }
 
   set(key, value) {
+    if (typeof window === 'undefined') return;
     if (localStorage.length > 222) {
       for (let i = 7; i >= 0; ) {
         const key = localStorage.key(Math.random() * localStorage.length);
