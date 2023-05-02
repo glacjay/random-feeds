@@ -31,7 +31,6 @@ export default observer(function App() {
               path="/RecentlyReadItems"
               component={require('src/pages/RecentlyReadItemsPage').default}
             />
-            <Route path="/Folder" component={require('src/pages/FolderPage').default} />
             <Route path="/Item" component={require('src/pages/ItemPage').default} />
           </Switch>
         </div>

@@ -50,7 +50,7 @@ function Folder({ folder }) {
 
   return (
     <Link
-      href={`/Folder?id=${folder.id}`}
+      href={`/folder?id=${folder.id}`}
       style={{ margin: '4px 4px 0', border: '1px solid black', borderRadius: 4, padding: 8 }}
     >
       {folder.id?.replace(/.*\//g, '')} ({unreadsCount})
@@ -67,7 +67,7 @@ function RecentlyReadItems() {
         <Fragment>
           <div style={{ flex: 1, minHeight: 16 }} />
           <Link
-            href="/RecentlyReadItems"
+            href="/recently"
             style={{ margin: '4px 4px', border: '1px solid black', borderRadius: 4, padding: 8 }}
           >
             最近已读文章 ({recentlyReadItems.length})

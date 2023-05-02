@@ -1,8 +1,9 @@
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import qs from 'qs';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import {
   lruStorage,
   useFeedUnreadsCount,
@@ -16,14 +17,14 @@ import { useToast } from 'src/utils/useToast';
 import ItemActions from 'src/widgets/ItemActions';
 
 export default observer(function FolderPage(props) {
-  const { pathname } = useLocation();
+  const router = useRouter();
   useEffect(() => {
     setTimeout(() => window.scrollTo(0, 0), 222);
-  }, [pathname]);
+  }, [router.pathname]);
 
   const rootStore = useRootStore();
 
-  const query = qs.parse(props.location.search.slice(1));
+  const { query } = router;
   const { id: folderId } = query;
 
   const { folders, error } = useFolders();
@@ -112,7 +113,7 @@ function Item({ folderId, item }) {
         padding: 8,
       }}
     >
-      <Link to={`/Item?${qs.stringify({ folderId, id: item.id })}`}>
+      <Link href={`/item?${qs.stringify({ folderId, id: item.id })}`}>
         <div>{item.title}</div>
         <div
           className="flex-row align-center"
