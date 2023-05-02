@@ -1,16 +1,16 @@
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react';
+import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { lruStorage, useToken } from 'src/data';
+import { useToken } from 'src/data';
 import { useRootStore } from 'src/RootStore';
 import api2 from 'src/utils/api2';
 
-export default observer(function LoginPage(props) {
-  const history = useHistory();
+export default observer(function LoginPage() {
+  const router = useRouter();
   const rootStore = useRootStore();
-  const token = useToken();
+  const [token, setToken] = useToken();
 
   const [username, setUsername] = useState(null);
   const [password, setPassword] = useState(null);
@@ -42,8 +42,8 @@ export default observer(function LoginPage(props) {
         }
 
         const token = json.Auth;
-        lruStorage.set('token', token);
-        history.goBack();
+        setToken(token);
+        router.back();
       } catch (ex) {
         console.warn('LoginPage.login error:', ex);
         toast(`login failed: ${ex}`);
@@ -51,7 +51,7 @@ export default observer(function LoginPage(props) {
         rootStore.isSubmitting = false;
       }
     });
-  }, [history, password, rootStore, username]);
+  }, [password, rootStore, router, setToken, username]);
 
   return (
     <div

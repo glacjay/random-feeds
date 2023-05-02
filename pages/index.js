@@ -5,7 +5,7 @@ import { lruStorage, useFolders, useFolderUnreadsCount, useToken } from 'src/dat
 import { useToast } from 'src/utils/useToast';
 
 export default function IndexPage() {
-  const token = useToken();
+  const [token] = useToken();
 
   if (!token) {
     return <Link href="/login">Login</Link>;
@@ -21,7 +21,7 @@ export default function IndexPage() {
 }
 
 function TotalUnreadsCount() {
-  const token = useToken();
+  const [token] = useToken();
   const { data, error } = useQuery('/reader/api/0/unread-count?output=json', { enabled: !!token });
   useToast(error);
   const totalUnreadsCount = data?.bq_total_unreads;

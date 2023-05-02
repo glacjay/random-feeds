@@ -7,8 +7,7 @@ import { useToast } from './utils/useToast';
 const LOADING_COUNT = 7;
 
 export function useToken() {
-  const [token] = useLocalStorage('token');
-  return token;
+  return useLocalStorage('token');
 }
 
 // export const lruStorage = new LocalStorageLRU({
@@ -53,7 +52,7 @@ class MyLocalStorage {
 export const lruStorage = new MyLocalStorage();
 
 export function useFolders() {
-  const token = useToken();
+  const [token] = useToken();
   const result = useQuery('/reader/api/0/tag/list?output=json', {
     enabled: !!token,
     select: (data) => data.tags.filter((tag) => /\/label\//.test(tag.id)),
@@ -63,7 +62,7 @@ export function useFolders() {
 }
 
 function useAllUnreadCounts() {
-  const token = useToken();
+  const [token] = useToken();
   const result = useQuery('/reader/api/0/unread-count?output=json', {
     enabled: !!token,
     select: (data) => data.unreadcounts,
@@ -83,7 +82,7 @@ export function useFeedUnreadsCount(subscriptionId) {
 }
 
 function useAllSubscriptions() {
-  const token = useToken();
+  const [token] = useToken();
   const result = useQuery('/reader/api/0/subscription/list?output=json', {
     enabled: !!token,
     select: (data) => data.subscriptions.sort((s1, s2) => s1.id.localeCompare(s2.id)),
