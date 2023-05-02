@@ -15,7 +15,7 @@ api2.request = async (method, url, args, options) => {
       ...args,
     };
 
-    const token = await lruStorage.get('token');
+    const token = JSON.parse(lruStorage.get('token') || 'null');
     const headers = {
       ...(token ? { Authorization: `GoogleLogin auth=${token}` } : {}),
     };

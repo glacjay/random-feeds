@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import React, { Fragment } from 'react';
 import { useQuery } from 'react-query';
-import { lruStorage, useFolders, useFolderUnreadsCount, useToken } from 'src/data';
+import { useFolders, useFolderUnreadsCount, useToken } from 'src/data';
 import { useToast } from 'src/utils/useToast';
+import useLocalStorage from 'use-local-storage';
 
 export default function IndexPage() {
   const [token] = useToken();
@@ -32,7 +33,7 @@ function TotalUnreadsCount() {
 function Folders() {
   const { folders, isFetching } = useFolders();
 
-  if (isFetching) return 'loading...';
+  if (isFetching) return <div>loading...</div>;
 
   return (
     <Fragment>
@@ -58,7 +59,7 @@ function Folder({ folder }) {
 }
 
 function RecentlyReadItems() {
-  const recentlyReadItems = JSON.parse(lruStorage.get('recentlyReadItems') || '[]');
+  const recentlyReadItems = useLocalStorage('recentlyReadItems');
 
   return (
     <Fragment>
