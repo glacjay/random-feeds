@@ -3,22 +3,24 @@ import { observer } from 'mobx-react';
 import React, { Fragment, useCallback } from 'react';
 import { useQueryClient } from 'react-query';
 import { toast } from 'react-toastify';
+import { useLocalRandomItemsStore, useRecentlyReadItems } from 'src/data';
 import { useRootStore } from 'src/RootStore';
 import api2 from 'src/utils/api2';
-import useLocalStorage from 'use-local-storage';
 
 function _ItemActions(props) {
   const queryClient = useQueryClient();
   const rootStore = useRootStore();
   const { folderId, item, router } = props;
 
-  const [randomItems, setRandomItems] = useLocalStorage(`randomItems:${folderId}`, []);
-  const [recentlyItems, setRecentlyItems] = useLocalStorage('recentlyReadItems', []);
+  const useLocalRandomItems = useLocalRandomItemsStore(folderId);
+  const [randomItems, setRandomItems] = useLocalRandomItems([]);
+
+  const [recentlyItems, setRecentlyItems] = useRecentlyReadItems();
 
   const removeItem = useCallback(() => {
     setRandomItems(randomItems.filter((it) => it.id !== item.id));
-    queryClient.invalidateQueries(['randomItems', folderId]);
-  }, [setRandomItems, randomItems, queryClient, folderId, item.id]);
+    queryClient.invalidateQueries('randomItems');
+  }, [setRandomItems, randomItems, queryClient, item.id]);
 
   const markAsRead = useCallback(() => {
     runInAction(async () => {

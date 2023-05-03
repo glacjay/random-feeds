@@ -1,9 +1,8 @@
 import Link from 'next/link';
 import React, { Fragment } from 'react';
 import { useQuery } from 'react-query';
-import { useFolders, useFolderUnreadsCount, useToken } from 'src/data';
+import { useFolders, useFolderUnreadsCount, useRecentlyReadItems, useToken } from 'src/data';
 import { useToast } from 'src/utils/useToast';
-import useLocalStorage from 'use-local-storage';
 
 export default function IndexPage() {
   const [token] = useToken();
@@ -59,7 +58,7 @@ function Folder({ folder }) {
 }
 
 function RecentlyReadItems() {
-  const recentlyReadItems = useLocalStorage('recentlyReadItems');
+  const recentlyReadItems = useRecentlyReadItems();
 
   return (
     <Fragment>

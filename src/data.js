@@ -1,25 +1,20 @@
+import { useMemo } from 'react';
 import { useQuery } from 'react-query';
-import useLocalStorage from 'use-local-storage';
+import createPersistedState from 'use-persisted-state';
 
 import api2 from './utils/api2';
 import { useToast } from './utils/useToast';
 
 const LOADING_COUNT = 7;
 
-export function useToken() {
-  return useLocalStorage('token');
+export const useToken = createPersistedState('token');
+export const useRecentlyReadItems = createPersistedState('recentlyReadItems');
+export function useLocalRandomItemsStore(folderId) {
+  return useMemo(() => createPersistedState(`randomItems:${folderId}`), [folderId]);
 }
-
-// export const lruStorage = new LocalStorageLRU({
-//   maxSize: 222,
-//   isCandidate: (key) => {
-//     const result = !!key?.startsWith('item:');
-//     if (!result) {
-//       toast(`not a candidate: ${key}`);
-//     }
-//     return result;
-//   },
-// });
+export function useItemStore(itemId) {
+  return useMemo(() => createPersistedState(`item:${itemId}`), [itemId]);
+}
 
 class MyLocalStorage {
   get(key) {
@@ -93,7 +88,8 @@ export function useRandomItems({ folderId, isReloading }) {
   const subscriptions = useFolderSubscriptions(folderId);
   const { unreadCounts } = useAllUnreadCounts();
 
-  const [localRandomItems, setLocalRandomItems] = useLocalStorage(`randomItems:${folderId}`, []);
+  const useLocalRandomItems = useLocalRandomItemsStore(folderId);
+  const [localRandomItems, setLocalRandomItems] = useLocalRandomItems([]);
 
   const result = useQuery(
     ['randomItems', folderId],
@@ -171,7 +167,8 @@ export function useRandomItems({ folderId, isReloading }) {
 }
 
 export function useItem(item) {
-  const [cachedItem, setCachedItem] = useLocalStorage(`item:${item.id}`);
+  const useItem = useItemStore(item.id);
+  const [cachedItem, setCachedItem] = useItem();
 
   const enabled = !cachedItem && !item.crawlTimeMsec;
   const result = useQuery(`/reader/api/0/stream/items/contents?output=json&i=${item.id}`, {

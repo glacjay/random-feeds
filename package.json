@@ -48,7 +48,7 @@
     "react-query": "^3.34.7",
     "react-toastify": "^6.0.8",
     "styled-components": "^5.2.0",
-    "use-local-storage": "^3.0.0"
+    "use-persisted-state": "^0.3.3"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",

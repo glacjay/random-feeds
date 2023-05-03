@@ -2,10 +2,10 @@ import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
 import Link from 'next/link';
 import React from 'react';
-import useLocalStorage from 'use-local-storage';
+import { useRecentlyReadItems } from 'src/data';
 
 export default observer(function FolderPage() {
-  const recentlyReadItems = useLocalStorage('recentlyReadItems');
+  const [recentlyReadItems] = useRecentlyReadItems();
 
   return (
     <div className="flex-column" style={{ paddingBottom: 4 }}>
