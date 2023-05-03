@@ -105,7 +105,7 @@ export default observer(function ItemPage(props) {
           zIndex: 7,
           width: '100vw',
           height: 'calc(50px + env(safe-area-inset-bottom))',
-          paddingBottom: 'calc(20px + env(safe-area-inset-bottom))',
+          paddingBottom: 'calc(env(safe-area-inset-bottom))',
         }}
       >
         <ItemActions

@@ -92,7 +92,12 @@ export function useRandomItems({ folderId, isReloading }) {
   const [localRandomItems, setLocalRandomItems] = useLocalRandomItems([]);
 
   const result = useQuery(
-    ['randomItems', folderId],
+    [
+      'randomItems',
+      folderId,
+      // deps
+      { localRandomItems },
+    ],
     async () => {
       if (localRandomItems.length > Math.random() * LOADING_COUNT) return localRandomItems;
 
