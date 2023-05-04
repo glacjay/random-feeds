@@ -5,32 +5,31 @@ name: deploy to gh-pages
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [16.8.x]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name: Yarn CLI
-      uses: CultureHQ/actions-yarn@v1.0.1
-    - run: yarn
-    - run: yarn build
-    - name: GH Pages deploy
-      uses: Cecilapp/GitHub-Pages-deploy@2.0.1
-      env:
-        EMAIL: glacjay@gmail.com
-        GH_TOKEN: ${{ secrets.GH_ACTIONS_KEY }}
-        BUILD_DIR: build
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Yarn CLI
+        uses: CultureHQ/actions-yarn@v1.0.1
+      - run: yarn
+      - run: yarn build
+      - name: GH Pages deploy
+        uses: Cecilapp/GitHub-Pages-deploy@2.0.1
+        env:
+          EMAIL: glacjay@gmail.com
+          GH_TOKEN: ${{ secrets.GH_ACTIONS_KEY }}
+          BUILD_DIR: build
