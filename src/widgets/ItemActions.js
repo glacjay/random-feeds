@@ -15,7 +15,7 @@ function _ItemActions(props) {
   const useLocalRandomItems = useLocalRandomItemsStore(folderId);
   const [randomItems, setRandomItems] = useLocalRandomItems([]);
 
-  const [recentlyItems, setRecentlyItems] = useRecentlyReadItems();
+  const [recentlyItems, setRecentlyItems] = useRecentlyReadItems([]);
 
   const removeItem = useCallback(() => {
     setRandomItems(randomItems.filter((it) => it.id !== item.id));
