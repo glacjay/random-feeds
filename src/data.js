@@ -131,15 +131,24 @@ export function useRandomItems({ folderId, isReloading }) {
           .map(async (subscription) => {
             const unreadCount = unreadCounts?.find((uc) => uc.id === subscription.id)?.count;
             const loadingCount = Math.ceil(Math.log(unreadCount) / bottom) + 1;
-            return (
-              await api2.get('/reader/api/0/stream/items/ids', {
-                output: 'json',
-                s: subscription.id,
-                xt: 'user/-/state/com.google/read',
-                r: 'o',
-                n: loadingCount,
-              })
-            ).itemRefs.map((item) => ({ ...item, feedId: subscription.id }));
+            const [oldestItems, newestItems] = await Promise.all(
+              ['o', 'n'].map(
+                async (r) =>
+                  (
+                    await api2.get('/reader/api/0/stream/items/ids', {
+                      output: 'json',
+                      s: subscription.id,
+                      xt: 'user/-/state/com.google/read',
+                      r,
+                      n: loadingCount,
+                    })
+                  ).itemRefs,
+              ),
+            );
+            return [...oldestItems, ...newestItems].map((item) => ({
+              ...item,
+              feedId: subscription.id,
+            }));
           }),
       );
 
