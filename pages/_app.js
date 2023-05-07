@@ -3,6 +3,7 @@ import './index.css';
 
 import Head from 'next/head';
 import React from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { cssTransition, ToastContainer } from 'react-toastify';
 import RootStore, { RootStoreContext } from 'src/RootStore';
@@ -16,7 +17,7 @@ const queryClient = new QueryClient({
   },
 });
 
-function MyApp({ Component, pageProps }) {
+export default function MyApp({ Component, pageProps }) {
   return (
     <React.StrictMode>
       <Head>
@@ -39,11 +40,21 @@ function MyApp({ Component, pageProps }) {
       <QueryClientProvider client={queryClient}>
         <RootStoreContext.Provider value={new RootStore()}>
           <div style={{ margin: '0 auto', maxWidth: 666, lineHeight: 1.8, fontSize: 18 }}>
-            <Component {...pageProps} />
+            <ErrorBoundary
+              fallbackRender={({ error, resetErrorBoundary }) => (
+                <div>
+                  <h1>Something went wrong</h1>
+                  <pre style={{ whiteSpace: 'pre-wrap' }}>{error.message}</pre>
+                  <button onClick={resetErrorBoundary}>Try again</button>
+                  <button onClick={() => localStorage.removeItem('token')}>Clear token</button>
+                </div>
+              )}
+            >
+              <Component {...pageProps} />
+            </ErrorBoundary>
           </div>
         </RootStoreContext.Provider>
       </QueryClientProvider>
     </React.StrictMode>
   );
 }
-export default MyApp;
