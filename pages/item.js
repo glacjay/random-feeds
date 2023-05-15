@@ -66,7 +66,7 @@ export default observer(function ItemPage(props) {
   if (!item) return null;
 
   return (
-    <div className="flex-column" style={{ paddingRight: 20, overflowX: 'hidden' }}>
+    <div className="flex-column" style={{ overflowX: 'hidden' }}>
       <a
         href={item?.canonical?.[0]?.href}
         target="_blank"
