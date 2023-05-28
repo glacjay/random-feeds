@@ -2,6 +2,7 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import './index.css';
 
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -23,6 +24,8 @@ export default function MyApp({ Component, pageProps }) {
       <Head>
         <title>random feeds</title>
       </Head>
+
+      <BasePathInitializer />
 
       <ToastContainer
         autoClose={4000}
@@ -57,4 +60,12 @@ export default function MyApp({ Component, pageProps }) {
       </QueryClientProvider>
     </React.StrictMode>
   );
+}
+
+function BasePathInitializer() {
+  const router = useRouter();
+  React.useEffect(() => {
+    api2.basePath = router.basePath;
+  }, [router.basePath]);
+  return null;
 }
