@@ -99,7 +99,7 @@ export function useRandomItems({ folderId, isReloading }) {
       { localRandomItems },
     ],
     async () => {
-      if (localRandomItems.length > Math.random() * LOADING_COUNT) return localRandomItems;
+      if (localRandomItems.length > 2) return localRandomItems;
 
       const localItemFeeds = new Set(localRandomItems.map((item) => item.feedId));
       let subscriptionsCopy = subscriptions.filter((sub) => sub?.id && !localItemFeeds.has(sub.id));
@@ -152,24 +152,20 @@ export function useRandomItems({ folderId, isReloading }) {
           }),
       );
 
-      const newItems = newItemsArray.flat();
-      const loadingItems = [];
-      let addedCount = 0;
-      while (newItems.length > 0) {
-        const index = Math.floor(Math.random() * newItems.length);
-        const [newItem] = newItems.splice(index, 1);
-        if (
-          (isReloading || !localRandomItems.some((item) => item.id === newItem.id)) &&
-          !loadingItems.some((item) => item.id === newItem.id)
-        ) {
-          loadingItems.push(newItem);
-          addedCount += 1;
-          if (addedCount >= LOADING_COUNT) break;
+      const loadingItems = isReloading ? [] : [...localRandomItems];
+      for (const newItems of newItemsArray) {
+        while (newItems.length > 0) {
+          const index = Math.floor(Math.random() * newItems.length);
+          const [newItem] = newItems.splice(index, 1);
+          if (!loadingItems.some((item) => item.id === newItem.id)) {
+            loadingItems.push(newItem);
+            break;
+          }
         }
       }
 
-      const randomItems = [...(isReloading ? [] : localRandomItems), ...loadingItems].filter(
-        (item, pos, self) => self.findIndex((i2) => i2.id === item.id) === pos,
+      const randomItems = loadingItems.filter(
+        (item, pos, self) => self.findIndex((item2) => item2.id === item.id) === pos,
       );
 
       setLocalRandomItems(randomItems);
