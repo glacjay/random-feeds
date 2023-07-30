@@ -108,7 +108,6 @@ export function useRandomItems({ folderId, isReloading }) {
       }
 
       const usedSubscriptions = [];
-      let bottom = Math.log(1.7);
       for (
         let i = 0;
         usedSubscriptions.length < LOADING_COUNT && subscriptionsCopy.length > 0;
@@ -117,20 +116,21 @@ export function useRandomItems({ folderId, isReloading }) {
         const subscription = subscriptionsCopy[i];
         const unreadCount = unreadCounts?.find((uc) => uc.id === subscription.id)?.count || 0;
         const probability =
-          (Math.abs(Math.log(unreadCount + 1) / bottom - 4) + 1) / subscriptionsCopy.length;
+          (Math.abs(Math.log(unreadCount + 1) / bottom(500, 12) - 4) + 1) /
+          subscriptionsCopy.length;
         if (!usedSubscriptions.includes(subscription) && Math.random() < probability) {
           usedSubscriptions.push(subscription);
           subscriptionsCopy.splice(i, 1);
         }
       }
 
-      bottom = Math.log(subscriptionsCopy.length + 1);
       const newItemsArray = await Promise.all(
         usedSubscriptions
           .filter((subscription) => subscription?.id)
           .map(async (subscription) => {
             const unreadCount = unreadCounts?.find((uc) => uc.id === subscription.id)?.count;
-            const loadingCount = Math.ceil(Math.log(unreadCount) / bottom) + 1;
+            const loadingCount =
+              Math.ceil(Math.log(unreadCount) / Math.log(subscriptionsCopy.length + 1)) + 1;
             const [oldestItems, newestItems] = await Promise.all(
               ['o', 'n'].map(
                 async (r) =>
@@ -152,9 +152,14 @@ export function useRandomItems({ folderId, isReloading }) {
           }),
       );
 
-      const loadingItems = isReloading ? [] : [...localRandomItems];
+      const loadingItems = [];
       for (const newItems of newItemsArray) {
-        while (newItems.length > 0) {
+        const unreadCount = unreadCounts?.find((uc) => uc.id === newItems?.[0]?.feedId)?.count || 0;
+        for (
+          let i = 0;
+          i < Math.log(unreadCount) / Math.log(bottom(450, 2)) && newItems.length > 0;
+          i += 1
+        ) {
           const index = Math.floor(Math.random() * newItems.length);
           const [newItem] = newItems.splice(index, 1);
           if (!loadingItems.some((item) => item.id === newItem.id)) {
@@ -164,9 +169,19 @@ export function useRandomItems({ folderId, isReloading }) {
         }
       }
 
-      const randomItems = loadingItems.filter(
-        (item, pos, self) => self.findIndex((item2) => item2.id === item.id) === pos,
-      );
+      const shuffledLoadingItems = [...loadingItems];
+      for (let i = shuffledLoadingItems.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledLoadingItems[i], shuffledLoadingItems[j]] = [
+          shuffledLoadingItems[j],
+          shuffledLoadingItems[i],
+        ];
+      }
+
+      const randomItems = [
+        ...(isReloading ? [] : [...localRandomItems]),
+        ...shuffledLoadingItems,
+      ].filter((item, pos, self) => self.findIndex((item2) => item2.id === item.id) === pos);
 
       setLocalRandomItems(randomItems);
       return randomItems;
@@ -174,6 +189,11 @@ export function useRandomItems({ folderId, isReloading }) {
     { enabled: subscriptions?.length > 0 },
   );
   return { ...result, randomItems: result.data };
+}
+
+/** log a(n) = b, calculate a */
+function bottom(n, b) {
+  return Math.pow(Math.E, Math.log(n) / b);
 }
 
 export function useItem(item) {
