@@ -130,7 +130,10 @@ export function useRandomItems({ folderId, isReloading }) {
           .map(async (subscription) => {
             const unreadCount = unreadCounts?.find((uc) => uc.id === subscription.id)?.count;
             const loadingCount =
-              Math.ceil(Math.log(unreadCount) / Math.log(subscriptionsCopy.length + 1)) + 1;
+              Math.max(
+                0,
+                Math.ceil(Math.log(unreadCount) / Math.log((usedSubscriptions.length + 1) / 6)),
+              ) + 1;
             const [oldestItems, newestItems] = await Promise.all(
               ['o', 'n'].map(
                 async (r) =>
