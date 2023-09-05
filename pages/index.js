@@ -58,7 +58,7 @@ function Folder({ folder }) {
 }
 
 function RecentlyReadItems() {
-  const recentlyReadItems = useRecentlyReadItems();
+  const [recentlyReadItems] = useRecentlyReadItems();
 
   return (
     <Fragment>

@@ -113,7 +113,7 @@ function Item({ folderId, item }) {
       }}
     >
       <Link href={`/item?${qs.stringify({ folderId, id: item.id })}`}>
-        <div>{item.title}</div>
+        <div style={{ wordBreak: 'break-word' }}>{item.title}</div>
         <div
           className="flex-row align-center"
           style={{ marginTop: 8, justifyContent: 'space-between', fontSize: 12, color: 'gray' }}
