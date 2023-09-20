@@ -154,16 +154,16 @@ export function useRandomItems({ folderId, isReloading }) {
       const loadingItems = [];
       for (const newItems of newItemsArray) {
         const unreadCount = unreadCounts?.find((uc) => uc.id === newItems?.[0]?.feedId)?.count || 0;
-        for (
-          let i = 0;
-          i < Math.log(unreadCount) / Math.log(bottom(450, 2)) && newItems.length > 0;
-          i += 1
-        ) {
+        const loadingCount = Math.max(
+          1,
+          Math.floor(Math.log(unreadCount) / Math.log(bottom(400, 2))),
+        );
+        for (let i = 0; i < loadingCount && newItems.length > 0; ) {
           const index = Math.floor(Math.random() * newItems.length);
           const [newItem] = newItems.splice(index, 1);
           if (!loadingItems.some((item) => item.id === newItem.id)) {
             loadingItems.push(newItem);
-            break;
+            i += 1;
           }
         }
       }
@@ -225,7 +225,6 @@ export function useItem(item) {
       for (let i = 7; i >= 0; ) {
         const key = localStorage.key(Math.random() * localStorage.length);
         if (key?.startsWith('item:')) {
-          console.log('xxx', { key });
           localStorage.removeItem(key);
           i--;
         }
