@@ -4,7 +4,7 @@ import Link from 'next/link';
 import React from 'react';
 import { useRecentlyReadItems } from 'src/data';
 
-export default observer(function FolderPage() {
+export default observer(function RecentlyPage() {
   const [recentlyReadItems] = useRecentlyReadItems();
 
   return (

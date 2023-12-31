@@ -2,9 +2,7 @@
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
-  output: 'export',
-  distDir: 'build',
-  basePath: '/random-feeds',
+  experimental: { appDir: true },
 };
 
 module.exports = nextConfig;

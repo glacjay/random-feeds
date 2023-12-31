@@ -65,7 +65,7 @@ export function useFeedUnreadsCount(subscriptionId) {
   return unreadCounts?.find((uc) => uc.id === subscriptionId)?.count;
 }
 
-function useAllSubscriptions() {
+export function useAllSubscriptions() {
   const [token] = useToken();
   const result = useQuery('/reader/api/0/subscription/list?output=json', {
     enabled: !!token,

@@ -38,10 +38,12 @@
     "axios": "0.24.0",
     "dayjs": "1.9.3",
     "html-to-react": "^1.4.4",
+    "https-proxy-agent": "^7.0.2",
     "md5": "^2.3.0",
     "mobx": "6.0.1",
     "mobx-react": "^7.0.0",
     "next": "^13.3.4",
+    "node-fetch": "^3.3.2",
     "qs": "^6.9.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -52,6 +54,8 @@
     "use-persisted-state": "^0.3.3"
   },
   "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/react": "^18.2.46",
     "babel-eslint": "^10.1.0",
     "browserslist": "^4.18.1",
     "eslint": "8.6.0",

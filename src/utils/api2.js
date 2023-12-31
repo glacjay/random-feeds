@@ -1,6 +1,8 @@
 import axios from 'axios';
 import qs from 'qs';
 
+export const FEVER_API_ENDPOINT = 'https://bazqux.com';
+
 const api2 = {};
 
 let api = axios.create({
