@@ -29,9 +29,11 @@ export async function GET(request: Request) {
       console.log('feedUrl', feedUrl);
 
       try {
-        const response = await fetch(feedUrl, {
-          agent: new HttpsProxyAgent('http://localhost:7322'),
-        });
+        const fetchingConfig = {};
+        if (process.env.PROXY) {
+          fetchingConfig['agent'] = new HttpsProxyAgent(process.env.PROXY);
+        }
+        const response = await fetch(feedUrl, fetchingConfig);
         const status = await response.status;
         if (status !== 200) {
           return new Response(JSON.stringify({ brokenFeed: randomSubscription }), {
