@@ -1,7 +1,7 @@
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import fetch from 'node-fetch';
 
-import api2, { FEVER_API_ENDPOINT } from '@/utils/api2';
+import { FEVER_API_ENDPOINT } from '@/utils/api2';
 
 const MAX_TRY = 42;
 
@@ -26,6 +26,7 @@ export async function GET(request: Request) {
         1,
       )[0];
       const feedUrl = randomSubscription.id?.replace(/^feed\//, '');
+      randomSubscription.feedUrl = feedUrl;
       console.log('feedUrl', feedUrl);
 
       try {

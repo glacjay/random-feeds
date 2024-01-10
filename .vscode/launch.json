@@ -14,9 +14,7 @@
       "runtimeArgs": ["dev"],
       "env": {
         "PORT": "7702",
-        "all_proxy": "http://localhost:7322",
-        "http_proxy": "http://localhost:7322",
-        "https_proxy": "http://localhost:7322"
+        "PROXY": "http://localhost:7322"
       }
     }
   ]

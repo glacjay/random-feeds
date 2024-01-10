@@ -16,6 +16,7 @@ export default function IndexPage() {
       <TotalUnreadsCount />
       <Folders />
       <RecentlyReadItems />
+      <a href="/broken-feeds">Broken Feeds</a>
     </div>
   );
 }
