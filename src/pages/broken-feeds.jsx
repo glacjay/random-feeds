@@ -26,7 +26,18 @@ export default function BrokenFeeds() {
   return (
     <div>
       <h1>Broken Feeds</h1>
-      <div>{data?.feedUrl}</div>
+      <div>
+        original url:{' '}
+        <a href={data?.htmlUrl} target="_blank" rel="noreferrer">
+          {data?.title}
+        </a>
+      </div>
+      <div>
+        feed url:{' '}
+        <a href={data?.feedUrl} target="_blank" rel="noreferrer">
+          {data?.feedUrl}
+        </a>
+      </div>
       <div>{JSON.stringify(data)}</div>
     </div>
   );
