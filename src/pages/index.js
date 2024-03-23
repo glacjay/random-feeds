@@ -13,10 +13,15 @@ export default function IndexPage() {
 
   return (
     <div className="flex-column" style={{ minHeight: '100vh' }}>
-      <TotalUnreadsCount />
+      <div
+        className="flex-row align-center"
+        style={{ margin: '0 4px', justifyContent: 'space-between' }}
+      >
+        <TotalUnreadsCount />
+        <a href="/broken-feeds">Broken Feeds</a>
+      </div>
       <Folders />
       <RecentlyReadItems />
-      <a href="/broken-feeds">Broken Feeds</a>
     </div>
   );
 }
@@ -27,7 +32,7 @@ function TotalUnreadsCount() {
   useToast(error);
   const totalUnreadsCount = data?.bq_total_unreads;
 
-  return <div style={{ margin: '4px 4px 0' }}>未读：{totalUnreadsCount}</div>;
+  return <div style={{}}>未读：{totalUnreadsCount}</div>;
 }
 
 function Folders() {
