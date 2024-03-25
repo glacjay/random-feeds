@@ -1,3 +1,5 @@
+'use client';
+
 import { makeAutoObservable } from 'mobx';
 import React from 'react';
 
@@ -13,7 +15,7 @@ export default class RootStore {
   }
 }
 
-export const RootStoreContext = React.createContext(null);
+export const RootStoreContext = React.createContext();
 
 export function useRootStore() {
   return React.useContext(RootStoreContext);

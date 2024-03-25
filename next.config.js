@@ -2,7 +2,12 @@
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
-  experimental: { appDir: true },
+  experimental: {
+    serverActions: true,
+    logging: {
+      level: 'verbose',
+    },
+  },
 };
 
 module.exports = nextConfig;
