@@ -1,5 +1,6 @@
 'use server';
 
+import { redirect } from 'next/navigation';
 import qs from 'qs';
 
 import { FEVER_API_ENDPOINT } from '@/utils/api2';
@@ -33,4 +34,6 @@ export async function login(formData: FormData) {
 
   if (!json.Auth) throw new Error('account or password incorrect');
   setToken(json.Auth);
+
+  redirect('/');
 }
