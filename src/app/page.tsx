@@ -28,16 +28,13 @@ export default function Page() {
   );
 }
 
-function TotalUnreadsCount() {
-  async function getData() {
-    const token = getToken();
-    const response = await fetch(`${FEVER_API_ENDPOINT}/reader/api/0/unread-count?output=json`, {
-      headers: { Authorization: `GoogleLogin auth=${token}` },
-    });
-    const data = await response.json();
-    return data.bq_total_unreads;
-  }
-  const totalUnreadsCount = use(getData());
+async function TotalUnreadsCount() {
+  const token = getToken();
+  const response = await fetch(`${FEVER_API_ENDPOINT}/reader/api/0/unread-count?output=json`, {
+    headers: { Authorization: `GoogleLogin auth=${token}` },
+  });
+  const data = await response.json();
+  const totalUnreadsCount = data.bq_total_unreads;
 
   return <div style={{}}>未读：{totalUnreadsCount}</div>;
 }
