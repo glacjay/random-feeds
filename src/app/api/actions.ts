@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import qs from 'qs';
 
 import { FEVER_API_ENDPOINT } from '@/utils/api2';
-import { setToken } from '@/utils/token';
+import { getToken, setToken } from '@/utils/token';
 
 export async function login(formData: FormData) {
   const response = await fetch(`${FEVER_API_ENDPOINT}/accounts/ClientLogin`, {
@@ -16,6 +16,7 @@ export async function login(formData: FormData) {
       Email: formData.get('username'),
       Passwd: formData.get('password'),
     }),
+    cache: 'no-store',
   });
   const result = await response.text();
 
@@ -36,4 +37,13 @@ export async function login(formData: FormData) {
   setToken(json.Auth);
 
   redirect('/');
+}
+
+export async function loadFolders() {
+  const token = getToken();
+  const result = (await fetch(`${FEVER_API_ENDPOINT}/reader/api/0/tag/list?output=json`, {
+    headers: { Authorization: `GoogleLogin auth=${token}` },
+  })) as any;
+  const resultJson = await result.json();
+  return resultJson.tags?.filter((tag) => /\/label\//.test(tag.id));
 }
