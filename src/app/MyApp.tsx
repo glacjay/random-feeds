@@ -6,7 +6,7 @@ import './index.css';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { cssTransition, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import RootStore, { RootStoreContext } from 'src/RootStore';
 import api2 from 'src/utils/api2';
 
@@ -24,12 +24,6 @@ export default function MyApp({ children }) {
       <ToastContainer
         autoClose={4000}
         closeButton={false}
-        transition={cssTransition({
-          enter: 'slideInDown',
-          exit: 'slideOutUp',
-          duration: 300,
-        })}
-        hideProgressBar
         toastClassName="toast-border"
         bodyClassName="toast-body"
       />
