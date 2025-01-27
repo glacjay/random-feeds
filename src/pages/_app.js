@@ -1,4 +1,3 @@
-import 'react-toastify/dist/ReactToastify.min.css';
 import './index.css';
 
 import Head from 'next/head';

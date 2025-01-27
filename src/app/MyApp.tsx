@@ -1,6 +1,5 @@
 'use client';
 
-import 'react-toastify/dist/ReactToastify.min.css';
 import './index.css';
 
 import React from 'react';
@@ -22,10 +21,10 @@ export default function MyApp({ children }) {
   return (
     <React.StrictMode>
       <ToastContainer
-        autoClose={4000}
-        closeButton={false}
-        toastClassName="toast-border"
-        bodyClassName="toast-body"
+      // autoClose={4000}
+      // closeButton={false}
+      // toastClassName="toast-border"
+      // bodyClassName="toast-body"
       />
 
       <QueryClientProvider client={queryClient}>
