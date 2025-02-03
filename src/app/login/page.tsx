@@ -7,11 +7,7 @@ export default function Page() {
     <form action={login}>
       <input name="username" type="text" placeholder="Username" required />
       <input name="password" type="password" placeholder="Password" required />
-      <LoginButton />
+      <button type="submit">Login</button>
     </form>
   );
-}
-
-function LoginButton() {
-  return <button type="submit">Login</button>;
 }

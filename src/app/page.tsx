@@ -4,7 +4,7 @@ import React, { Fragment } from 'react';
 import { FEVER_API_ENDPOINT } from '@/utils/api2';
 import { getToken } from '@/utils/token';
 
-import { loadFolders } from './api/actions';
+import { loadFolders } from './api/data';
 import { RecentlyReadItems } from './RecentlyReadItems';
 
 export default function Page() {

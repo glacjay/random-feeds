@@ -1,12 +1,10 @@
-'use client';
-
 import Link from 'next/link';
 import React, { Fragment } from 'react';
 
-import { useRecentlyReadItems } from '@/data';
+import { loadRecentlyReadItems } from './api/actions';
 
-export function RecentlyReadItems() {
-  const [recentlyReadItems] = useRecentlyReadItems();
+export async function RecentlyReadItems() {
+  const recentlyReadItems = await loadRecentlyReadItems();
 
   return (
     <Fragment>

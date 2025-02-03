@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
-import { observer } from 'mobx-react';
 import Link from 'next/link';
 import React from 'react';
-import { useRecentlyReadItems } from 'src/data';
 
-export default observer(function RecentlyPage() {
-  const [recentlyReadItems] = useRecentlyReadItems();
+import { loadRecentlyReadItems } from '../api/actions';
+
+export default async function Page() {
+  const recentlyReadItems = await loadRecentlyReadItems();
 
   return (
     <div className="flex-column" style={{ paddingBottom: 4 }}>
@@ -49,4 +49,4 @@ export default observer(function RecentlyPage() {
         ))}
     </div>
   );
-});
+}

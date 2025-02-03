@@ -1,23 +1,18 @@
 import dayjs from 'dayjs';
 import HtmlToReact, { Parser as HtmlToReactParser } from 'html-to-react';
-import { observer } from 'mobx-react';
-import { useRouter } from 'next/router';
-import React, { useMemo } from 'react';
-import { useFeedUnreadsCount, useItem } from 'src/data';
-import { useToast } from 'src/utils/useToast';
-import ItemActions from 'src/widgets/ItemActions';
+import React from 'react';
 
-export default observer(function ItemPage(props) {
-  const router = useRouter();
-  const { query } = router;
-  const { id: itemId } = query;
+import { ItemActions } from '@/widgets/ItemActions';
 
-  const { item, error } = useItem({ id: itemId });
-  useToast(error);
+import { loadFeedUnreadsCount, loadItem } from '../api/actions';
 
-  const unreadCount = useFeedUnreadsCount(item?.origin?.streamId);
+export default async function Page({ searchParams }) {
+  const { folderId, id: itemId } = searchParams;
 
-  const contentElement = useMemo(() => {
+  const item = await loadItem({ id: itemId });
+  const unreadCount = await loadFeedUnreadsCount(item?.origin?.streamId);
+
+  const contentElement = (() => {
     if (!item?.summary?.content) return null;
 
     const preprocessingInstructions = [
@@ -46,21 +41,21 @@ export default observer(function ItemPage(props) {
         },
       },
     ];
-    const processNodeDefinitions = new HtmlToReact.ProcessNodeDefinitions(React);
+    const processNodeDefinitions = HtmlToReact.ProcessNodeDefinitions();
     const processingInstructions = [
       {
         shouldProcessNode: () => true,
         processNode: processNodeDefinitions.processDefaultNode,
       },
     ];
-    const parser = new HtmlToReactParser();
+    const parser = HtmlToReactParser();
     return parser.parseWithInstructions(
       item.summary.content,
       () => true,
       processingInstructions,
       preprocessingInstructions,
     );
-  }, [item]);
+  })();
 
   // try to reserve scroll position
   if (!item) return null;
@@ -108,13 +103,8 @@ export default observer(function ItemPage(props) {
           paddingBottom: 'calc(env(safe-area-inset-bottom))',
         }}
       >
-        <ItemActions
-          folderId={query.folderId}
-          item={item}
-          router={router}
-          buttonStyle={{ flex: 1, height: 44 }}
-        />
+        <ItemActions folderId={folderId} item={item} buttonStyle={{ flex: 1, height: 44 }} />
       </div>
     </div>
   );
-});
+}
