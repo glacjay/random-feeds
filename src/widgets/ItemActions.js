@@ -4,8 +4,10 @@ import React, { Fragment, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { markAsRead, removeItem } from '@/app/api/actions';
+import { useRouter } from 'next/router';
 
 export async function ItemActions({ folderId, item, buttonStyle }) {
+  let router = useRouter();
   let [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!item?.id) return null;
@@ -17,7 +19,7 @@ export async function ItemActions({ folderId, item, buttonStyle }) {
           try {
             setIsSubmitting(true);
             await markAsRead(folderId, item.id);
-            window.history.back();
+            router.back();
           } catch (ex) {
             console.warn('ItemActions.markAsRead error:', ex);
             toast.error(ex.message);
@@ -47,7 +49,7 @@ export async function ItemActions({ folderId, item, buttonStyle }) {
           try {
             setIsSubmitting(true);
             await removeItem(folderId, item.id);
-            window.history.back();
+            router.back();
           } catch (ex) {
             console.warn('ItemActions.removeItem error:', ex);
             toast.error(ex.message);
