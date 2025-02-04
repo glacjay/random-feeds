@@ -3,8 +3,9 @@ module.exports = {
   extends: 'react-app',
   plugins: ['import', 'simple-import-sort'],
   rules: {
-    'import/first': 0,
+    'import/first': 'off',
     'import/newline-after-import': 'error',
+    'import/no-anonymous-default-export': 'off',
     'import/no-duplicates': 'error',
     'no-console': 0,
     'no-unused-vars': 1,
