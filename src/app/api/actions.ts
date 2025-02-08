@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import qs from 'qs';
 
 import { FEVER_API_ENDPOINT } from '@/utils/api2';
+import { setCookie } from '@/utils/cookies';
 import { getToken, setToken } from '@/utils/token';
 
 import { loadAllUnreadCounts, loadFolderSubscriptions } from './data';
@@ -151,7 +152,7 @@ export async function loadMoreRandomItems({
     ...shuffledLoadingItems,
   ].filter((item, pos, self) => self.findIndex((item2) => item2.id === item.id) === pos);
 
-  cookieStore.set(
+  setCookie(
     `localRandomItemIds:${encodeURIComponent(folderId)}`,
     JSON.stringify(randomItems.map((item) => item.id)),
   );
@@ -198,7 +199,7 @@ export async function removeItem(folderId, itemId) {
     cookieStore.get(`localRandomItemIds:${encodeURIComponent(folderId)}`)?.value || '[]',
   );
   localRandomItemIds = localRandomItemIds.filter((id) => id !== itemId);
-  cookieStore.set(
+  setCookie(
     `localRandomItemIds:${encodeURIComponent(folderId)}`,
     JSON.stringify(localRandomItemIds),
   );
@@ -206,7 +207,7 @@ export async function removeItem(folderId, itemId) {
 
 export async function markAsRead(folderId, itemId) {
   try {
-    let result = await fetch(
+    await fetch(
       `${FEVER_API_ENDPOINT}/reader/api/0/edit-tag?${qs.stringify({
         i: itemId,
         a: 'user/-/state/com.google/read',
@@ -225,7 +226,7 @@ export async function markAsRead(folderId, itemId) {
     recentlyReadItemIds = [itemId, ...recentlyReadItemIds]
       .reduce((acc, id) => (acc.includes(id) ? acc : [...acc, id]), [])
       .slice(0, 42);
-    cookieStore.set('recentlyReadItemIds', JSON.stringify(recentlyReadItemIds));
+    setCookie('recentlyReadItemIds', JSON.stringify(recentlyReadItemIds));
 
     removeItem(folderId, itemId);
   } catch (ex) {

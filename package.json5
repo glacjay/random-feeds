@@ -15,10 +15,10 @@
     development: ['last 1 chrome version', 'last 1 firefox version', 'last 1 safari version'],
   },
   dependencies: {
-    // upgraded
     dayjs: '^1.11.13',
     'html-to-react': '^1.4.4',
-    'https-proxy-agent': '^7.0.2',
+    // upgraded
+    'https-proxy-agent': '^7.0.6',
     md5: '^2.3.0',
     mobx: '6.0.1',
     'mobx-react': '^7.0.0',
