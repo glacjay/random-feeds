@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
-  extends: 'react-app',
-  plugins: ['import', 'simple-import-sort'],
+  extends: ['react-app'],
+  plugins: ['simple-import-sort'],
   rules: {
     'import/first': 'off',
     'import/newline-after-import': 'error',

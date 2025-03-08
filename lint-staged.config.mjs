@@ -1,3 +1,3 @@
 export default {
-  '*.js': ['prettier --write', 'tslint --fix', 'eslint --fix'],
+  '*.{js,jsx,ts,tsx}': ['prettier --write', 'eslint --fix'],
 };

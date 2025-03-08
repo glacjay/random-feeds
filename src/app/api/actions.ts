@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import qs from 'qs';
 
-import { FEVER_API_ENDPOINT, apiFetch } from '@/utils/api2';
+import { apiFetch, FEVER_API_ENDPOINT } from '@/utils/api2';
 import { setCookie } from '@/utils/cookies';
 import { getToken, setToken } from '@/utils/token';
 
@@ -52,7 +52,8 @@ export async function loadMoreRandomItems({
   folderId: string;
   isReloading?: boolean;
 }) {
-  const token = getToken();
+  // Verify token exists before proceeding
+  getToken();
 
   const subscriptions = await loadFolderSubscriptions(folderId);
   const unreadCounts = await loadAllUnreadCounts();
@@ -159,7 +160,8 @@ function bottom(n, b) {
 export async function loadItem(item) {
   if (item.crawlTimeMsec) return item;
 
-  let token = getToken();
+  // Verify token exists before proceeding
+  getToken();
   const json = await apiFetch('/reader/api/0/stream/items/contents', {
     queryParams: { i: item.id },
   });
