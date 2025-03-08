@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import qs from 'qs';
 
-import { FEVER_API_ENDPOINT } from '@/utils/api2';
+import { FEVER_API_ENDPOINT, apiFetch } from '@/utils/api2';
 import { setCookie } from '@/utils/cookies';
 import { getToken, setToken } from '@/utils/token';
 
@@ -98,22 +98,14 @@ export async function loadMoreRandomItems({
         const loadingCount = Math.ceil(unreadCount / LOADING_COUNT);
         const [oldestItems, newestItems] = await Promise.all(
           ['o', 'n'].map(async (r) => {
-            const response = await fetch(
-              `${FEVER_API_ENDPOINT}/reader/api/0/stream/items/ids?${qs.stringify({
-                output: 'json',
+            const data = await apiFetch('/reader/api/0/stream/items/ids', {
+              queryParams: {
                 s: subscription.id,
                 xt: 'user/-/state/com.google/read',
                 r,
                 n: loadingCount,
-              })}`,
-              {
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `GoogleLogin auth=${token}`,
-                },
               },
-            );
-            const data = await response.json();
+            });
             return data.itemRefs;
           }),
         );
@@ -168,15 +160,9 @@ export async function loadItem(item) {
   if (item.crawlTimeMsec) return item;
 
   let token = getToken();
-  let result = await fetch(
-    `${FEVER_API_ENDPOINT}/reader/api/0/stream/items/contents?output=json&${qs.stringify({
-      i: item.id,
-    })}`,
-    {
-      headers: { Authorization: `GoogleLogin auth=${token}` },
-    },
-  );
-  let json = await result.json();
+  const json = await apiFetch('/reader/api/0/stream/items/contents', {
+    queryParams: { i: item.id },
+  });
 
   return {
     ...json.items[0],
@@ -207,19 +193,13 @@ export async function removeItem(folderId, itemId) {
 
 export async function markAsRead(folderId, itemId) {
   try {
-    await fetch(
-      `${FEVER_API_ENDPOINT}/reader/api/0/edit-tag?${qs.stringify({
+    await apiFetch('/reader/api/0/edit-tag', {
+      method: 'POST',
+      queryParams: {
         i: itemId,
         a: 'user/-/state/com.google/read',
-      })}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `GoogleLogin auth=${getToken()}`,
-        },
       },
-    );
+    });
 
     let cookieStore = await cookies();
     let recentlyReadItemIds = JSON.parse(cookieStore.get('recentlyReadItemIds')?.value || '[]');

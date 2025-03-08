@@ -2,27 +2,18 @@
 
 import { cookies } from 'next/headers';
 
-import { FEVER_API_ENDPOINT } from '@/utils/api2';
-import { getToken } from '@/utils/token';
+import { apiFetch } from '@/utils/api2';
 
 import { loadItem } from './actions';
 
 export async function loadFolders() {
-  const token = getToken();
-  const result = (await fetch(`${FEVER_API_ENDPOINT}/reader/api/0/tag/list?output=json`, {
-    headers: { Authorization: `GoogleLogin auth=${token}` },
-  })) as any;
-  const resultJson = await result.json();
-  return resultJson.tags?.filter((tag) => /\/label\//.test(tag.id));
+  const data = await apiFetch('/reader/api/0/tag/list');
+  return data.tags?.filter((tag) => /\/label\//.test(tag.id));
 }
 
 export async function loadAllUnreadCounts() {
-  const token = getToken();
-  const result = await fetch(`${FEVER_API_ENDPOINT}/reader/api/0/unread-count?output=json`, {
-    headers: { Authorization: `GoogleLogin auth=${token}` },
-  });
-  const resultJson = await result.json();
-  return resultJson.unreadcounts;
+  const data = await apiFetch('/reader/api/0/unread-count');
+  return data.unreadcounts;
 }
 
 export async function loadFolderUnreadsCount(folder) {
@@ -32,12 +23,8 @@ export async function loadFolderUnreadsCount(folder) {
 }
 
 async function loadAllSubscriptions() {
-  const token = getToken();
-  const result = await fetch(`${FEVER_API_ENDPOINT}/reader/api/0/subscription/list?output=json`, {
-    headers: { Authorization: `GoogleLogin auth=${token}` },
-  });
-  const resultJson = await result.json();
-  return resultJson.subscriptions.sort((s1, s2) => s1.id.localeCompare(s2.id));
+  const data = await apiFetch('/reader/api/0/subscription/list');
+  return data.subscriptions.sort((s1, s2) => s1.id.localeCompare(s2.id));
 }
 
 export async function loadFolderSubscriptions(folderId) {
