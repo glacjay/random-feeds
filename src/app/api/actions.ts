@@ -195,13 +195,16 @@ export async function removeItem(folderId, itemId) {
 
 export async function markAsRead(folderId, itemId) {
   try {
-    await apiFetch('/reader/api/0/edit-tag', {
+    const response = await apiFetch('/reader/api/0/edit-tag', {
       method: 'POST',
       queryParams: {
         i: itemId,
         a: 'user/-/state/com.google/read',
       },
     });
+    if (response !== 'OK') {
+      throw new Error(`Failed to mark item as read: unexpected response '${response}'`);
+    }
 
     let cookieStore = await cookies();
     let recentlyReadItemIds = JSON.parse(cookieStore.get('recentlyReadItemIds')?.value || '[]');

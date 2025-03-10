@@ -35,12 +35,6 @@ importers:
       md5:
         specifier: ^2.3.0
         version: 2.3.0
-      mobx:
-        specifier: 6.0.1
-        version: 6.0.1
-      mobx-react:
-        specifier: ^7.0.0
-        version: 7.6.0(mobx@6.0.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       next:
         specifier: ^13.5.8
         version: 13.5.8(@babel/core@7.24.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -2474,35 +2468,6 @@ packages:
 
   minimist@1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
-
-  mobx-react-lite@3.4.3:
-    resolution: {integrity: sha512-NkJREyFTSUXR772Qaai51BnE1voWx56LOL80xG7qkZr6vo8vEaLF3sz1JNUVh+rxmUzxYaqOhfuxTfqUh0FXUg==}
-    peerDependencies:
-      mobx: ^6.1.0
-      react: ^16.8.0 || ^17 || ^18
-      react-dom: '*'
-      react-native: '*'
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
-      react-native:
-        optional: true
-
-  mobx-react@7.6.0:
-    resolution: {integrity: sha512-+HQUNuh7AoQ9ZnU6c4rvbiVVl+wEkb9WqYsVDzGLng+Dqj1XntHu79PvEWKtSMoMj67vFp/ZPXcElosuJO8ckA==}
-    peerDependencies:
-      mobx: ^6.1.0
-      react: ^16.8.0 || ^17 || ^18
-      react-dom: '*'
-      react-native: '*'
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
-      react-native:
-        optional: true
-
-  mobx@6.0.1:
-    resolution: {integrity: sha512-Pk6uJXZ34yqd661yRmS6z/9avm4FOGXpFpVjnEfiYYOsZXnAxv1fpYjxTCEZ9tuwk0Xe1qnUUlgm+rJtGe0YJA==}
 
   ms@2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
@@ -6221,23 +6186,6 @@ snapshots:
       brace-expansion: 2.0.1
 
   minimist@1.2.8: {}
-
-  mobx-react-lite@3.4.3(mobx@6.0.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
-    dependencies:
-      mobx: 6.0.1
-      react: 18.2.0
-    optionalDependencies:
-      react-dom: 18.2.0(react@18.2.0)
-
-  mobx-react@7.6.0(mobx@6.0.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
-    dependencies:
-      mobx: 6.0.1
-      mobx-react-lite: 3.4.3(mobx@6.0.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      react: 18.2.0
-    optionalDependencies:
-      react-dom: 18.2.0(react@18.2.0)
-
-  mobx@6.0.1: {}
 
   ms@2.1.2: {}
 

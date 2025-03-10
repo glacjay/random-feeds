@@ -56,8 +56,14 @@ export async function apiFetch(path, options = {}) {
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
-    return data;
+    const contentType = response.headers.get('Content-Type');
+    if (contentType && contentType.includes('application/json')) {
+      const data = await response.json();
+      return data;
+    }
+    // For non-JSON responses, return the text response
+    const text = await response.text();
+    return text;
   } catch (error) {
     console.error(`API request failed for ${path}:`, error);
     throw error;
