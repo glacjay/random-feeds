@@ -103,7 +103,11 @@ export default async function Page({ searchParams }) {
           paddingBottom: 'calc(env(safe-area-inset-bottom))',
         }}
       >
-        <ItemActions folderId={folderId} item={item} buttonStyle={{ flex: 1, height: 44 }} />
+        <ItemActions
+          folderId={folderId}
+          item={item}
+          buttonStyle={{ flex: 1, height: 44, minWidth: 0 }}
+        />
       </div>
     </div>
   );

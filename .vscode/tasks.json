@@ -9,7 +9,7 @@
     {
       "label": "pnpm install",
       "type": "shell",
-      "command": "n 18 && pnpm install",
+      "command": "pnpm install",
       "problemMatcher": [],
       "group": {
         "kind": "build",

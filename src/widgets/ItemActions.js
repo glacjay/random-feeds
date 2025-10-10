@@ -34,18 +34,7 @@ export function ItemActions({ folderId, item, buttonStyle }) {
         className="button"
         style={{ opacity: isSubmitting ? 0.5 : 1, ...buttonStyle }}
       >
-        mark as read
-      </button>
-
-      <button
-        onClick={() =>
-          executeAndMarkAsRead(() => window.open(item?.canonical?.[0]?.href, '_blank'))
-        }
-        disabled={isSubmitting}
-        className="button"
-        style={{ opacity: isSubmitting ? 0.5 : 1, ...buttonStyle }}
-      >
-        read & open
+        已读
       </button>
 
       <a
@@ -55,8 +44,19 @@ export function ItemActions({ folderId, item, buttonStyle }) {
         className="button flex-row justify-center align-center"
         style={{ opacity: isSubmitting ? 0.5 : 1, textDecoration: 'none', ...buttonStyle }}
       >
-        original link
+        原文
       </a>
+
+      <button
+        onClick={() =>
+          executeAndMarkAsRead(() => window.open(item?.canonical?.[0]?.href, '_blank'))
+        }
+        disabled={isSubmitting}
+        className="button"
+        style={{ opacity: isSubmitting ? 0.5 : 1, ...buttonStyle }}
+      >
+        {'读&开'}
+      </button>
 
       <button
         onClick={async () => {
@@ -75,7 +75,7 @@ export function ItemActions({ folderId, item, buttonStyle }) {
         className="button"
         style={{ opacity: isSubmitting ? 0.5 : 1, ...buttonStyle }}
       >
-        later
+        稍后
       </button>
     </Fragment>
   );
