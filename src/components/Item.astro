@@ -1,0 +1,35 @@
+---
+import dayjs from 'dayjs';
+
+interface Item {
+  id: string;
+  title: string;
+  author: string;
+  updated: number;
+  origin?: {
+    streamId: string;
+    title: string;
+  };
+}
+
+interface Props {
+  item: Item;
+  folderId?: string;
+  feedUnreadCount?: number;
+}
+
+const { item, folderId, feedUnreadCount } = Astro.props;
+const itemUrl = `/item?id=${encodeURIComponent(item.id)}${folderId ? `&folderId=${encodeURIComponent(folderId)}` : ''}`;
+---
+
+<a href={itemUrl} class="block p-3 my-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+    <div class="font-semibold text-lg break-words">{item.title}</div>
+    <div class="flex justify-between items-center mt-2 text-xs text-gray-500">
+        <span>
+            {typeof feedUnreadCount === 'number' ? `(${feedUnreadCount}) ` : ''}{item.origin?.title} | {item.author}
+        </span>
+        <span>
+            {dayjs(item.updated * 1000).format('YYYY-MM-DD HH:mm')}
+        </span>
+    </div>
+</a>

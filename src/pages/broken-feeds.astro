@@ -1,0 +1,71 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { getToken } from '@/lib/auth';
+import { apiFetch } from '@/lib/api';
+import { HttpsProxyAgent } from 'https-proxy-agent';
+
+const MAX_TRY = 42;
+
+async function findBrokenFeed(token: string) {
+  const data = await apiFetch('/reader/api/0/subscription/list', { token });
+  const allSubscriptions = data.subscriptions || [];
+
+  for (let i = 0; i < MAX_TRY && allSubscriptions.length > 0; i++) {
+    const randomIndex = Math.floor(Math.random() * allSubscriptions.length);
+    const randomSubscription = allSubscriptions.splice(randomIndex, 1)[0];
+    
+    const feedUrl = randomSubscription.id?.replace(/^feed\//, '');
+    if (!feedUrl) continue;
+
+    randomSubscription.feedUrl = feedUrl;
+    console.log('Checking feed:', feedUrl);
+
+    try {
+      const proxy = import.meta.env.PROXY;
+      const agent = proxy ? new HttpsProxyAgent(proxy) : undefined;
+      
+      // The 'dispatcher' property is the correct way to pass an agent to fetch in Node 18+ and Astro
+      const response = await fetch(feedUrl, { dispatcher: agent });
+
+      if (response.status !== 200) {
+        console.log('Found broken feed (bad status):', feedUrl, response.status);
+        return randomSubscription;
+      }
+    } catch (ex) {
+      console.warn('Found broken feed (fetch error):', feedUrl, ex);
+      return randomSubscription;
+    }
+  }
+
+  return null;
+}
+
+const token = getToken(Astro.cookies);
+let brokenFeed = null;
+if (token) {
+    brokenFeed = await findBrokenFeed(token);
+} else {
+    return Astro.redirect('/login');
+}
+---
+
+<Layout title="Broken Feeds">
+    <div class="py-4">
+        <h1 class="text-2xl font-bold mb-4">Broken Feed Finder</h1>
+        {brokenFeed ? (
+            <div class="p-4 border rounded-lg bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+                <h2 class="text-lg font-semibold text-red-800 dark:text-red-200">Found a potentially broken feed:</h2>
+                <p class="mt-2"><strong>Title:</strong> {brokenFeed.title}</p>
+                <p><strong>URL:</strong> <a href={brokenFeed.feedUrl} target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">{brokenFeed.feedUrl}</a></p>
+                <p><strong>API ID:</strong> <code class="text-sm bg-gray-200 dark:bg-gray-700 p-1 rounded">{brokenFeed.id}</code></p>
+                <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                    This tool checks random feeds from your list until it finds one that doesn't return a successful (200) status. Refresh to check another one.
+                </p>
+            </div>
+        ) : (
+            <div class="p-4 border rounded-lg bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+                <p class="font-semibold text-green-800 dark:text-green-200">No broken feeds found after {MAX_TRY} attempts.</p>
+            </div>
+        )}
+    </div>
+</Layout>

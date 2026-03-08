@@ -1,0 +1,10 @@
+---
+interface Props {
+    count: number;
+}
+const { count } = Astro.props;
+---
+
+<div class="text-lg font-semibold">
+    未读：{count}
+</div>

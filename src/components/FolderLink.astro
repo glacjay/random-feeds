@@ -1,0 +1,14 @@
+---
+import type { FolderWithUnread } from '@/lib/types';
+
+interface Props {
+    folder: FolderWithUnread;
+}
+
+const { folder } = Astro.props;
+const folderName = folder.id?.replace(/.*\//g, '');
+---
+
+<a href={`/folder?id=${folder.id}`} class="block p-3 my-1 border border-gray-300 dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+    {folderName} ({folder.unreadCount})
+</a>

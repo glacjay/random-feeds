@@ -1,11 +1,57 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from '@/layouts/Layout.astro';
+import { getToken } from '@/lib/auth';
+import * as data from '@/lib/data';
+import type { Folder, UnreadCount, FolderWithUnread, Item } from '@/lib/types';
+import TotalUnreads from '@/components/TotalUnreads.astro';
+import FolderLink from '@/components/FolderLink.astro';
+import { RecentlyReadItems } from '@/components/RecentlyReadItems';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// 1. Check for authentication
+const token = getToken(Astro.cookies);
+if (!token) {
+    return Astro.redirect('/login');
+}
+
+// 2. Fetch all necessary data in parallel
+const [unreadSummary, folders, recentlyReadItems] = await Promise.all([
+    data.loadUnreadSummary(token),
+    data.loadFolders(token),
+    data.loadRecentlyReadItems(Astro, token)
+]);
+const allUnreadCounts = unreadSummary.unreadcounts || [];
+
+// 3. Process data
+const totalUnreads = unreadSummary.bq_total_unreads || 0;
+
+const folderData: FolderWithUnread[] = folders.map((folder: Folder) => {
+    const folderId = folder.id?.replace(/\d+/, '-');
+    const unreadCount = allUnreadCounts.find((uc: UnreadCount) => uc.id === folderId)?.count || 0;
+    return { ...folder, unreadCount };
+});
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Home">
+    <div class="flex flex-col space-y-4 py-4">
+        <header class="flex justify-between items-center px-2">
+            <TotalUnreads count={totalUnreads} />
+            <a href="/broken-feeds" class="text-blue-500 hover:underline">Broken Feeds</a>
+        </header>
+
+        <section>
+            <h2 class="text-xl font-bold mb-2">Folders</h2>
+            <div class="flex flex-col">
+                {folderData.map((folder) => (
+                    <FolderLink folder={folder} />
+                ))}
+            </div>
+        </section>
+
+        <hr class="border-gray-200 dark:border-gray-700"/>
+
+        <section>
+            <h2 class="text-xl font-bold mb-2">Recently Read</h2>
+            <RecentlyReadItems items={recentlyReadItems} client:visible />
+        </section>
+    </div>
 </Layout>

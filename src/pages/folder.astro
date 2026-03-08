@@ -1,0 +1,93 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { getToken } from '@/lib/auth';
+import { loadAllUnreadCounts, loadRandomItemsForFolder } from '@/lib/data';
+import type { Item as ItemType } from '@/lib/types';
+import Item from '@/components/Item.astro';
+import { ReloadingButton } from '@/components/ReloadingButton';
+import { ScrollToBottom } from '@/components/ScrollToBottom';
+
+// 1. Get token and folder ID
+const token = getToken(Astro.cookies);
+if (!token) {
+    return Astro.redirect('/login');
+}
+const folderId = Astro.url.searchParams.get('id');
+if (!folderId) {
+    return new Response('Folder ID is required', { status: 400 });
+}
+
+// 2. Fetch cached random items for the folder (same behavior as the original app)
+const [cachedRandomItems, allUnreadCounts] = await Promise.all([
+    loadRandomItemsForFolder(Astro, token, folderId),
+    loadAllUnreadCounts(token),
+]);
+const items: ItemType[] = cachedRandomItems.reverse();
+const folderName = folderId.replace(/.*\//g, '');
+const normalizedFolderId = folderId.replace(/\d+/, '-');
+const folderUnreadCount = allUnreadCounts.find((uc) => uc.id === normalizedFolderId)?.count || 0;
+const feedUnreadCounts = new Map(allUnreadCounts.map((uc) => [uc.id, uc.count]));
+---
+
+<Layout title={`Folder - ${folderName}`}>
+    <div class="py-4 relative pb-20"> {/* Add padding-bottom for the fixed buttons */}
+        <header class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">{folderName}</h1>
+            <div class="text-lg">
+                <span>{items.length}/{folderUnreadCount}</span>
+            </div>
+        </header>
+
+        <div class="flex flex-col">
+            {items.length > 0 ? (
+                items.map((item) => {
+                    const feedUnreadCount = item.origin?.streamId
+                        ? (feedUnreadCounts.get(item.origin.streamId) || 0)
+                        : 0;
+                    return <Item item={item} folderId={folderId} feedUnreadCount={feedUnreadCount} />;
+                })
+            ) : (
+                <p class="text-center text-gray-500 mt-8">No cached random items yet. Click “Reload All” or “Load More” to generate items.</p>
+            )}
+        </div>
+        
+        {/* Fixed action buttons at the bottom */}
+        <div class="fixed bottom-0 left-0 right-0 h-14 z-10 flex max-w-3xl mx-auto">
+            <ReloadingButton folderId={folderId} isReloading={true} client:load />
+            <ReloadingButton folderId={folderId} isReloading={false} client:load />
+        </div>
+        <script is:inline>
+            const refreshKey = 'refresh-folder-on-back';
+
+            const shouldRefresh = () => {
+                try {
+                    return window.sessionStorage.getItem(refreshKey) === '1';
+                } catch (error) {
+                    console.warn('Failed to read refresh flag from sessionStorage:', error);
+                    return false;
+                }
+            };
+
+            const clearRefreshFlag = () => {
+                try {
+                    window.sessionStorage.removeItem(refreshKey);
+                } catch (error) {
+                    console.warn('Failed to clear refresh flag from sessionStorage:', error);
+                }
+            };
+
+            const refreshIfNeeded = () => {
+                if (!shouldRefresh()) {
+                    return;
+                }
+
+                clearRefreshFlag();
+                window.location.reload();
+            };
+
+            window.addEventListener('pageshow', refreshIfNeeded);
+            refreshIfNeeded();
+        </script>
+        <ScrollToBottom client:load />
+    </div>
+</Layout>
