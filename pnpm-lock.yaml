@@ -44,9 +44,6 @@ importers:
       html-to-react:
         specifier: ^1.7.0
         version: 1.7.0(react@19.2.4)
-      https-proxy-agent:
-        specifier: ^7.0.6
-        version: 7.0.6
       lucide-react:
         specifier: ^0.577.0
         version: 0.577.0(react@19.2.4)

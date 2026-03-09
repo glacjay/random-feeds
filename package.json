@@ -21,7 +21,6 @@
     "clsx": "^2.1.1",
     "dayjs": "^1.11.19",
     "html-to-react": "^1.7.0",
-    "https-proxy-agent": "^7.0.6",
     "lucide-react": "^0.577.0",
     "md5": "^2.3.0",
     "node-fetch": "^3.3.2",
