@@ -2,7 +2,6 @@
 import Layout from '@/layouts/Layout.astro';
 import { getToken } from '@/lib/auth';
 import { apiFetch } from '@/lib/api';
-import { HttpsProxyAgent } from 'https-proxy-agent';
 
 const MAX_TRY = 42;
 
@@ -21,11 +20,7 @@ async function findBrokenFeed(token: string) {
     console.log('Checking feed:', feedUrl);
 
     try {
-      const proxy = import.meta.env.PROXY;
-      const agent = proxy ? new HttpsProxyAgent(proxy) : undefined;
-      
-      // The 'dispatcher' property is the correct way to pass an agent to fetch in Node 18+ and Astro
-      const response = await fetch(feedUrl, { dispatcher: agent });
+      const response = await fetch(feedUrl);
 
       if (response.status !== 200) {
         console.log('Found broken feed (bad status):', feedUrl, response.status);

@@ -1,6 +1,5 @@
 import type { APIRoute } from 'astro';
 import qs from 'qs';
-import { HttpsProxyAgent } from 'https-proxy-agent';
 import { FEVER_API_ENDPOINT } from '@/lib/api';
 import { setToken } from '@/lib/auth';
 
@@ -56,44 +55,29 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-interface LoginFetchOptions extends RequestInit {
-  dispatcher?: HttpsProxyAgent;
-}
-
 async function requestClientLogin(username: string, password: string): Promise<string> {
-  const proxy = import.meta.env.PROXY;
-  const proxyAgent = proxy ? new HttpsProxyAgent(proxy) : undefined;
   const body = qs.stringify({
     Email: username,
     Passwd: password,
   });
 
-  // Prefer proxy when configured, then fallback to direct.
-  // Also retry transient network failures (e.g. ECONNRESET).
-  const plans = proxyAgent
-    ? [proxyAgent, proxyAgent, undefined]
-    : [undefined, undefined, undefined];
+  const maxAttempts = 3;
 
   let lastError: unknown;
-  for (let i = 0; i < plans.length; i++) {
-    const dispatcher = plans[i];
-
+  for (let i = 0; i < maxAttempts; i++) {
     try {
-      const fetchOptions: LoginFetchOptions = {
+      const response = await fetch(`${FEVER_API_ENDPOINT}/accounts/ClientLogin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body,
-        dispatcher,
-      };
-
-      const response = await fetch(`${FEVER_API_ENDPOINT}/accounts/ClientLogin`, fetchOptions);
+      });
       return await response.text();
     } catch (error) {
       lastError = error;
 
-      if (!isRetryableNetworkError(error) || i === plans.length - 1) {
+      if (!isRetryableNetworkError(error) || i === maxAttempts - 1) {
         throw error;
       }
 

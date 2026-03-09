@@ -1,5 +1,3 @@
-import { HttpsProxyAgent } from 'https-proxy-agent';
-
 export const FEVER_API_ENDPOINT = 'https://bazqux.com';
 
 interface ApiOptions {
@@ -9,10 +7,6 @@ interface ApiOptions {
   token?: string;
   headers?: Record<string, string>;
   forceText?: boolean;
-}
-
-interface RequestInitWithDispatcher extends RequestInit {
-  dispatcher?: HttpsProxyAgent;
 }
 
 const RETRYABLE_NETWORK_CODES = new Set([
@@ -77,31 +71,19 @@ export async function apiFetch(path: string, options: ApiOptions = {}): Promise<
     headers.Authorization = `GoogleLogin auth=${token}`;
   }
 
-  const proxy = import.meta.env.PROXY;
-  const agent = proxy ? new HttpsProxyAgent(proxy) : undefined;
-  
-  const fetchOptions: RequestInitWithDispatcher = {
+  const fetchOptions: RequestInit = {
       method,
       headers,
       body: typeof body === 'string' ? body : (body ? JSON.stringify(body) : undefined),
-      dispatcher: agent,
   };
 
   const isGetRequest = method === 'GET';
-  const dispatcherPlans: Array<HttpsProxyAgent | undefined> = (() => {
-    if (agent && isGetRequest) return [agent, agent, undefined];
-    if (agent) return [agent];
-    if (isGetRequest) return [undefined, undefined, undefined];
-    return [undefined];
-  })();
+  const maxAttempts = isGetRequest ? 3 : 1;
 
   let lastError: unknown;
-  for (let i = 0; i < dispatcherPlans.length; i++) {
+  for (let i = 0; i < maxAttempts; i++) {
     try {
-      const response = await fetch(url, {
-        ...fetchOptions,
-        dispatcher: dispatcherPlans[i],
-      });
+      const response = await fetch(url, fetchOptions);
 
       if (!response.ok) {
         throw new Error(`API error: ${response.status} ${response.statusText}`);
@@ -115,7 +97,7 @@ export async function apiFetch(path: string, options: ApiOptions = {}): Promise<
     } catch (error) {
       lastError = error;
 
-      if (!isRetryableNetworkError(error) || i === dispatcherPlans.length - 1) {
+      if (!isRetryableNetworkError(error) || i === maxAttempts - 1) {
         console.error(`API request failed for ${path}:`, error);
         throw error;
       }
