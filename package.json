@@ -3,9 +3,13 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
+    "types": "wrangler types",
+    "dev": "pnpm run types && astro dev",
+    "dev:astro": "astro dev",
+    "build": "pnpm run types && astro build",
+    "preview": "pnpm run types && astro preview",
+    "cf:dev": "pnpm run build && wrangler dev",
+    "cf:deploy": "pnpm run build && wrangler deploy",
     "astro": "astro"
   },
   "dependencies": {
@@ -39,6 +43,8 @@
     "use-persisted-state": "^0.3.3"
   },
   "devDependencies": {
-    "@types/qs": "^6.15.0"
+    "@types/node": "^25.3.5",
+    "@types/qs": "^6.15.0",
+    "wrangler": "^4.50.0"
   }
 }

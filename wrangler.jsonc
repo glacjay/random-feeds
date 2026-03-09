@@ -1,16 +1,25 @@
 {
+	"$schema": "node_modules/wrangler/config-schema.json",
 	"main": "dist/_worker.js/index.js",
 	"name": "astro-migration",
-  "compatibility_date": "2026-03-07",
+  "compatibility_date": "2026-03-09",
   "compatibility_flags": [
     "nodejs_compat",
     "global_fetch_strictly_public"
   ],
+	"workers_dev": true,
+	"preview_urls": true,
+	// Add SESSION KV namespace IDs before production deploy.
+	// Example:
+	// "kv_namespaces": [
+	//   { "binding": "SESSION", "id": "<PROD_ID>", "preview_id": "<PREVIEW_ID>" }
+	// ],
 	"assets": {
 		"binding": "ASSETS",
 		"directory": "./dist"
 	},
 	"observability": {
-    "enabled": true
+    "enabled": true,
+    "head_sampling_rate": 0.1
   }
 }

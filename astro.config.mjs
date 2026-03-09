@@ -11,5 +11,8 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
   output: 'server',
   integrations: [react(), tailwind()],
-  adapter: cloudflare()
+  adapter: cloudflare({
+    sessionKVBindingName: 'SESSION',
+    imageService: 'compile',
+  })
 });
