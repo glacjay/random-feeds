@@ -9,11 +9,13 @@
   ],
 	"workers_dev": true,
 	"preview_urls": true,
-	// Add SESSION KV namespace IDs before production deploy.
-	// Example:
-	// "kv_namespaces": [
-	//   { "binding": "SESSION", "id": "<PROD_ID>", "preview_id": "<PREVIEW_ID>" }
-	// ],
+	"kv_namespaces": [
+		{
+			"binding": "SESSION",
+			"id": "7ee872b3a86d452d9174b2e104105c6e",
+			"preview_id": "a1dba44a51c7478f9a08e392895748cf"
+		}
+	],
 	"assets": {
 		"binding": "ASSETS",
 		"directory": "./dist"
