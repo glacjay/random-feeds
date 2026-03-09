@@ -1,46 +1,72 @@
-# Astro Starter Kit: Basics
+# Random Feeds (Astro Migration)
 
-```sh
-pnpm create astro@latest -- --template basics
+Astro SSR migration for Random Feeds, targeting Cloudflare Workers deployment while keeping app logic portable.
+
+## Local development
+
+```bash
+pnpm install
+pnpm dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Scripts
 
-## 🚀 Project Structure
+| Command | Purpose |
+|---|---|
+| `pnpm types` | Regenerate Wrangler runtime types (`wrangler types`) |
+| `pnpm dev` | Type refresh + Astro dev server |
+| `pnpm dev:astro` | Astro dev only (faster, no type refresh) |
+| `pnpm build` | Type refresh + production build |
+| `pnpm preview` | Type refresh + local preview |
+| `pnpm cf:dev` | Build + run Worker locally with Wrangler |
+| `pnpm cf:deploy` | Build + deploy to Cloudflare Workers |
 
-Inside of your Astro project, you'll see the following folders and files:
+## Cloudflare Workers deployment
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+### 1) Create SESSION KV namespaces
+
+Astro Cloudflare adapter expects a `SESSION` KV binding for session storage.
+
+```bash
+pnpm wrangler kv namespace create SESSION
+pnpm wrangler kv namespace create SESSION --preview
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+Then add the returned IDs to `wrangler.jsonc`:
 
-## 🧞 Commands
+```jsonc
+"kv_namespaces": [
+  { "binding": "SESSION", "id": "<PROD_ID>", "preview_id": "<PREVIEW_ID>" }
+]
+```
 
-All commands are run from the root of the project, from a terminal:
+### 2) Authenticate Wrangler
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+```bash
+pnpm wrangler login
+```
 
-## 👀 Want to learn more?
+### 3) Deploy
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+```bash
+pnpm cf:deploy
+```
+
+## GitHub Actions deployment (Workers)
+
+Use `cloudflare/wrangler-action` and configure repository secrets:
+
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+
+## Free-tier deployment guardrails
+
+From Cloudflare official limits/pricing:
+
+- Workers requests: **100,000/day** (free)
+- CPU: **10ms/request** (free model)
+- Static assets requests: **free & unlimited**
+- Workers KV: **100k reads/day**, **1k writes/day**, **1GB storage**
+- Workers Logs: **200k events/day**
+
+This repo keeps observability sampling at `0.1` in `wrangler.jsonc` to reduce free-tier log pressure.
