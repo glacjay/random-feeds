@@ -1,6 +1,6 @@
-# Random Feeds (Astro Migration)
+# Random Feeds
 
-Astro SSR migration for Random Feeds, targeting Cloudflare Workers deployment while keeping app logic portable.
+Astro SSR app for Random Feeds, targeting Cloudflare Workers deployment while keeping app logic portable.
 
 ## Local development
 

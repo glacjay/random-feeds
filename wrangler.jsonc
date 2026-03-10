@@ -1,7 +1,7 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"main": "dist/_worker.js/index.js",
-	"name": "astro-migration",
+	"name": "random-feeds",
   "compatibility_date": "2026-03-09",
   "compatibility_flags": [
     "nodejs_compat",
