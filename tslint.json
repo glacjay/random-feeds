@@ -1,8 +1,0 @@
-{
-  "jsRules": {
-    "ordered-imports": true,
-    "no-duplicate-imports": {
-      "severity": "warning"
-    }
-  }
-}

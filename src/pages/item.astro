@@ -1,0 +1,80 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { getToken } from '@/lib/auth';
+import { loadItem, loadFeedUnreadsCount } from '@/lib/data';
+import type { Item } from '@/lib/types';
+import { ItemActions } from '@/components/ItemActions';
+import dayjs from 'dayjs';
+
+// 1. Get token and IDs
+const token = getToken(Astro.cookies);
+if (!token) {
+    return Astro.redirect('/login');
+}
+const itemId = Astro.url.searchParams.get('id');
+const folderId = Astro.url.searchParams.get('folderId') || undefined;
+
+if (!itemId) {
+    return new Response('Item ID is required', { status: 400 });
+}
+
+// 2. Fetch data
+const item: Item = await loadItem(token, { id: itemId });
+const unreadCount = await loadFeedUnreadsCount(token, item?.origin?.streamId);
+
+// Basic styling for content that will be injected as HTML
+const contentStyles = `
+    <style>
+        .injected-content {
+            line-height: 2;
+            font-size: 1.05rem;
+        }
+        .injected-content p,
+        .injected-content li,
+        .injected-content blockquote {
+            line-height: 2;
+        }
+        .injected-content img {
+            max-width: 100%;
+            height: auto;
+        }
+        .injected-content pre {
+            border: 1px solid lightgray;
+            padding: 2px;
+            overflow-x: auto;
+            white-space: pre;
+            font-size: 0.8rem;
+        }
+    </style>
+`;
+const styledContent = contentStyles + `<div class="injected-content">${item?.summary?.content || ''}</div>`;
+---
+
+<Layout title={item?.title || 'Item'}>
+    <div class="flex flex-col min-h-screen">
+        {/* Sticky Header */}
+        <header class="sticky top-0 bg-gray-200 dark:bg-gray-800 p-4 shadow-md z-10">
+            <a href={item?.canonical?.[0]?.href} target="_blank" rel="noopener noreferrer">
+                <h1 class="text-xl font-bold break-words">{item?.title}</h1>
+                <div class="flex justify-between items-center mt-2 text-xs text-gray-600 dark:text-gray-400">
+                    <span>({unreadCount}) {item?.origin?.title} | {item?.author}</span>
+                    <span>{dayjs(item?.updated * 1000).format('YYYY-MM-DD HH:mm')}</span>
+                </div>
+            </a>
+        </header>
+
+        {/* Article Content */}
+        <div class="relative m-2 overflow-x-auto" set:html={styledContent} />
+
+        {/* Spacer for the fixed footer */}
+        <div class="flex-grow"></div>
+        <div class="h-28"></div> 
+
+        {/* Fixed Footer Actions */}
+        <footer class="fixed bottom-0 left-0 right-0 z-10 border-t bg-background/95 backdrop-blur-sm">
+            <div class="max-w-3xl mx-auto flex">
+                 <ItemActions folderId={folderId} item={item} client:load />
+            </div>
+        </footer>
+    </div>
+</Layout>
