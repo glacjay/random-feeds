@@ -80,27 +80,30 @@ export function ItemActions({ folderId, item }: ItemActionsProps) {
 
   const originalUrl = item?.canonical?.[0]?.href;
 
+const commonButtonClass = "h-14 flex-1 rounded-none text-lg";
+  const linkButtonClass = "inline-flex items-center justify-center whitespace-nowrap";
+
   return (
     <>
       <Button
         onClick={markAsRead}
         disabled={isLoading}
         variant="outline"
-        className="h-14 flex-1 rounded-none"
+        className={commonButtonClass}
       >
         已读
       </Button>
-
+      
       <a
         href={originalUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="h-14 flex-1 flex items-center justify-center border bg-background hover:bg-gray-100"
+        className={`${linkButtonClass} ${commonButtonClass} border bg-background hover:bg-accent hover:text-accent-foreground`}
         style={{ opacity: isLoading ? 0.5 : 1 }}
       >
         原文
       </a>
-
+      
       <Button
         onClick={async () => {
           if (originalUrl) {
@@ -111,16 +114,16 @@ export function ItemActions({ folderId, item }: ItemActionsProps) {
         }}
         disabled={isLoading}
         variant="outline"
-        className="h-14 flex-1 rounded-none"
+        className={commonButtonClass}
       >
         读&开
       </Button>
-
+      
       <Button
         onClick={removeItem}
         disabled={isLoading}
         variant="outline"
-        className="h-14 flex-1 rounded-none"
+        className={commonButtonClass}
       >
         稍后
       </Button>

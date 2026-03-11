@@ -20,9 +20,9 @@ importers:
       '@fontsource-variable/geist':
         specifier: ^5.2.8
         version: 5.2.8
-      '@fontsource/lxgw-wenkai-tc':
-        specifier: ^5.2.8
-        version: 5.2.8
+      '@fontsource/lxgw-wenkai':
+        specifier: ^5.2.5
+        version: 5.2.5
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.14
@@ -845,8 +845,8 @@ packages:
   '@fontsource-variable/geist@5.2.8':
     resolution: {integrity: sha512-cJ6m9e+8MQ5dCYJsLylfZrgBh6KkG4bOLckB35Tr9J/EqdkEM6QllH5PxqP1dhTvFup+HtMRPuz9xOjxXJggxw==}
 
-  '@fontsource/lxgw-wenkai-tc@5.2.8':
-    resolution: {integrity: sha512-bbzfwZx5Ifc635MViFDfH6h//SgR0ylnhKSV487roGxWU2W4ue2KtygrGYMg40TSJ3GEZ5LdEheq1ABmSSjKfQ==}
+  '@fontsource/lxgw-wenkai@5.2.5':
+    resolution: {integrity: sha512-lIBouZW7qNw3VdVnjc0NC80iDfxjU7OnaKGaz6QHiHjC8z0fv9MyrHpeBMzkPnyEVabcpUu4Wf8DnaihfGVYtw==}
 
   '@hono/node-server@1.19.11':
     resolution: {integrity: sha512-dr8/3zEaB+p0D2n/IUrlPF1HZm586qgJNXK1a9fhg/PzdtkK7Ksd5l312tJX2yBuALqDYBlG20QEbayqPyxn+g==}
@@ -5287,7 +5287,7 @@ snapshots:
 
   '@fontsource-variable/geist@5.2.8': {}
 
-  '@fontsource/lxgw-wenkai-tc@5.2.8': {}
+  '@fontsource/lxgw-wenkai@5.2.5': {}
 
   '@hono/node-server@1.19.11(hono@4.12.5)':
     dependencies:

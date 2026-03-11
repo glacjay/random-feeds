@@ -26,13 +26,13 @@ const unreadCount = await loadFeedUnreadsCount(token, item?.origin?.streamId);
 const contentStyles = `
     <style>
         .injected-content {
-            line-height: 2;
+            line-height: 1.6;
             font-size: 1.05rem;
         }
         .injected-content p,
         .injected-content li,
         .injected-content blockquote {
-            line-height: 2;
+            line-height: 1.6;
         }
         .injected-content img {
             max-width: 100%;
@@ -50,7 +50,7 @@ const contentStyles = `
 const styledContent = contentStyles + `<div class="injected-content">${item?.summary?.content || ''}</div>`;
 ---
 
-<Layout title={item?.title || 'Item'}>
+<Layout title={item?.title || 'Item'} contentClass="p-0">
     <div class="flex flex-col min-h-screen">
         {/* Sticky Header */}
         <header class="sticky top-0 bg-gray-200 dark:bg-gray-800 p-4 shadow-md z-10">
@@ -68,7 +68,7 @@ const styledContent = contentStyles + `<div class="injected-content">${item?.sum
 
         {/* Spacer for the fixed footer */}
         <div class="flex-grow"></div>
-        <div class="h-28"></div> 
+        <div class="h-28"></div>
 
         {/* Fixed Footer Actions */}
         <footer class="fixed bottom-0 left-0 right-0 z-10 border-t bg-background/95 backdrop-blur-sm">
