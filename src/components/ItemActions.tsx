@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { toast } from 'react-toastify';
-import { Button } from '@/components/ui/button';
-import type { Item } from '@/lib/types';
+import { useState } from "react";
+import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
+import type { Item } from "@/lib/types";
 
 interface ItemActionsProps {
   folderId?: string;
@@ -13,12 +13,12 @@ interface ItemActionsProps {
 export function ItemActions({ folderId, item }: ItemActionsProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const goBackWithFolderRefresh = () => {
+  const goBack = () => {
     if (folderId) {
       try {
-        sessionStorage.setItem('refresh-folder-on-back', '1');
+        sessionStorage.setItem("refresh-folder-on-back", "1");
       } catch (error) {
-        console.warn('Failed to set refresh-folder-on-back flag:', error);
+        console.warn("Failed to set refresh-folder-on-back flag:", error);
       }
     }
 
@@ -26,25 +26,35 @@ export function ItemActions({ folderId, item }: ItemActionsProps) {
   };
 
   const markAsRead = async () => {
-    setIsLoading(true);
     try {
-      const response = await fetch('/api/mark-as-read', {
-        method: 'POST',
+      setIsLoading(true);
+
+      const response = await fetch("/api/mark-as-read", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ itemId: item.id, folderId }),
       });
 
+      const responseText = (await response.text()).trim();
+
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Failed to mark as read');
+        throw new Error(responseText || "Failed to mark as read");
       }
 
-      goBackWithFolderRefresh();
+      if (responseText !== "OK") {
+        throw new Error(
+          `Failed to mark as read: unexpected response '${responseText}'`,
+        );
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 80));
+      goBack();
     } catch (ex) {
-      const error = ex instanceof Error ? ex.message : 'An unknown error occurred';
-      console.warn('ItemActions.markAsRead error:', ex);
+      const error =
+        ex instanceof Error ? ex.message : "An unknown error occurred";
+      console.warn("ItemActions.markAsRead error:", ex);
       toast.error(error);
     } finally {
       setIsLoading(false);
@@ -54,24 +64,25 @@ export function ItemActions({ folderId, item }: ItemActionsProps) {
   const removeItem = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/remove-item', {
-        method: 'POST',
+      const response = await fetch("/api/remove-item", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ itemId: item.id, folderId }),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText || 'Failed to remove item');
+        throw new Error(errorText || "Failed to remove item");
       }
 
-      toast.success('Item removed.');
-      goBackWithFolderRefresh();
+      toast.success("Item removed.");
+      goBack();
     } catch (ex) {
-      const error = ex instanceof Error ? ex.message : 'An unknown error occurred';
-      console.warn('ItemActions.removeItem error:', ex);
+      const error =
+        ex instanceof Error ? ex.message : "An unknown error occurred";
+      console.warn("ItemActions.removeItem error:", ex);
       toast.error(error);
     } finally {
       setIsLoading(false);
@@ -80,8 +91,9 @@ export function ItemActions({ folderId, item }: ItemActionsProps) {
 
   const originalUrl = item?.canonical?.[0]?.href;
 
-const commonButtonClass = "h-14 flex-1 rounded-none text-lg";
-  const linkButtonClass = "inline-flex items-center justify-center whitespace-nowrap";
+  const commonButtonClass = "h-14 flex-1 rounded-none text-lg";
+  const linkButtonClass =
+    "inline-flex items-center justify-center whitespace-nowrap";
 
   return (
     <>
@@ -93,7 +105,7 @@ const commonButtonClass = "h-14 flex-1 rounded-none text-lg";
       >
         已读
       </Button>
-      
+
       <a
         href={originalUrl}
         target="_blank"
@@ -103,11 +115,11 @@ const commonButtonClass = "h-14 flex-1 rounded-none text-lg";
       >
         原文
       </a>
-      
+
       <Button
         onClick={async () => {
           if (originalUrl) {
-            window.open(originalUrl, '_blank');
+            window.open(originalUrl, "_blank");
           }
 
           await markAsRead();
@@ -118,7 +130,7 @@ const commonButtonClass = "h-14 flex-1 rounded-none text-lg";
       >
         读&开
       </Button>
-      
+
       <Button
         onClick={removeItem}
         disabled={isLoading}
