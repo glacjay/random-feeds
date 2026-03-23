@@ -59,5 +59,11 @@
     @apply bg-background text-foreground;
     font-family: "LXGW WenKai", "Kaiti SC", "STKaiti", serif;
     font-feature-settings: "rlig" 1, "calt" 1;
+    font-weight: bold;
   }
+}
+
+a {
+  @apply underline;
+  color: rgb(47, 123, 191);
 }
