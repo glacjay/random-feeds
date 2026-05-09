@@ -92,8 +92,6 @@ export function ItemActions({ folderId, item }: ItemActionsProps) {
   const originalUrl = item?.canonical?.[0]?.href;
 
   const commonButtonClass = "h-14 flex-1 rounded-none text-lg";
-  const linkButtonClass =
-    "inline-flex items-center justify-center whitespace-nowrap";
 
   return (
     <>
@@ -106,15 +104,16 @@ export function ItemActions({ folderId, item }: ItemActionsProps) {
         已读
       </Button>
 
-      <a
-        href={originalUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`${linkButtonClass} ${commonButtonClass} border bg-background hover:bg-accent hover:text-accent-foreground`}
-        style={{ opacity: isLoading ? 0.5 : 1 }}
+      <Button
+        asChild
+        disabled={isLoading}
+        variant="outline"
+        className={commonButtonClass}
       >
-        原文
-      </a>
+        <a href={originalUrl} target="_blank" rel="noopener noreferrer">
+          原文
+        </a>
+      </Button>
 
       <Button
         onClick={async () => {

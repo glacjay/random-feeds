@@ -1,5 +1,3 @@
-@import "@fontsource/lxgw-wenkai/index.css";
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -57,9 +55,6 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: "LXGW WenKai", "Kaiti SC", "STKaiti", serif;
-    font-feature-settings: "rlig" 1, "calt" 1;
-    font-weight: bold;
   }
 }
 

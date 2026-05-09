@@ -22,32 +22,28 @@ if (!itemId) {
 const item: Item = await loadItem(token, { id: itemId });
 const unreadCount = await loadFeedUnreadsCount(token, item?.origin?.streamId);
 
-// Basic styling for content that will be injected as HTML
-const contentStyles = `
-    <style>
-        .injected-content {
-            line-height: 1.6;
-            font-size: 1.05rem;
-        }
-        .injected-content p,
-        .injected-content li,
-        .injected-content blockquote {
-            line-height: 1.6;
-        }
-        .injected-content img {
-            max-width: 100%;
-            height: auto;
-        }
-        .injected-content pre {
-            border: 1px solid lightgray;
-            padding: 2px;
-            overflow-x: auto;
-            white-space: pre;
-            font-size: 0.8rem;
-        }
-    </style>
-`;
-const styledContent = contentStyles + `<div class="injected-content">${item?.summary?.content || ''}</div>`;
+const articleHtml = item?.summary?.content || '';
+
+const iframeContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 24px 12px;
+    }
+    img, video, svg { max-width: 100%; height: auto; }
+    pre { overflow-x: auto; }
+    table { max-width: 100%; }
+  </style>
+</head>
+<body>${articleHtml}</body>
+</html>`;
 ---
 
 <Layout title={item?.title || 'Item'} contentClass="p-0">
@@ -63,8 +59,8 @@ const styledContent = contentStyles + `<div class="injected-content">${item?.sum
             </a>
         </header>
 
-        {/* Article Content */}
-        <div class="relative m-2 overflow-x-auto" set:html={styledContent} />
+        {/* Article Content — iframe isolates RSS HTML from Tailwind Preflight */}
+        <iframe id="article-frame" srcdoc={iframeContent} class="w-full border-none" />
 
         {/* Spacer for the fixed footer */}
         <div class="flex-grow"></div>
@@ -78,3 +74,33 @@ const styledContent = contentStyles + `<div class="injected-content">${item?.sum
         </footer>
     </div>
 </Layout>
+
+<script is:inline>
+  (function() {
+    var frame = document.getElementById('article-frame');
+    if (!frame) return;
+
+    function resize() {
+      try {
+        var doc = frame.contentDocument || frame.contentWindow?.document;
+        if (!doc) return;
+        frame.style.height = doc.documentElement.scrollHeight + 'px';
+      } catch (e) {
+        // cross-origin restriction — shouldn't happen with srcdoc
+      }
+    }
+
+    frame.addEventListener('load', function() {
+      resize();
+      // Some content loads late (images, iframes, etc.)
+      var observer = new MutationObserver(resize);
+      try {
+        observer.observe(frame.contentDocument.body, {
+          childList: true,
+          subtree: true,
+          attributes: true
+        });
+      } catch (e) {}
+    });
+  })();
+</script>
