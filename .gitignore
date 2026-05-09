@@ -30,3 +30,6 @@ pnpm-debug.log*
 
 # local debug logs
 dev.log
+
+# playwright MCP output
+.playwright-mcp/
