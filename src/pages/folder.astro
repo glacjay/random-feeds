@@ -6,6 +6,7 @@ import type { Item as ItemType } from '@/lib/types';
 import Item from '@/components/Item.astro';
 import { ReloadingButton } from '@/components/ReloadingButton';
 import { ScrollToBottom } from '@/components/ScrollToBottom';
+import { AutoLoadMore } from '@/components/AutoLoadMore';
 
 // 1. Get token and folder ID
 const token = getToken(Astro.cookies);
@@ -89,5 +90,6 @@ const feedUnreadCounts = new Map(allUnreadCounts.map((uc) => [uc.id, uc.count]))
             refreshIfNeeded();
         </script>
         <ScrollToBottom client:load />
+        <AutoLoadMore client:load />
     </div>
 </Layout>
