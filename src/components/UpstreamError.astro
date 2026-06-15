@@ -1,0 +1,28 @@
+---
+// 顶部横幅：提示 BazQux 上游 API 异常，页面已降级为空数据。
+interface Props {
+    detail?: string;
+}
+const { detail } = Astro.props;
+---
+
+<div
+    role="alert"
+    class="rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100"
+>
+    <p class="font-semibold">BazQux 服务端异常，数据暂时无法加载。</p>
+    <p class="mt-1 text-sm">
+        这是 BazQux 后端的一个已知 bug（<code>minViewWithKey_go Nil</code> at
+        <code>containers-0.6.5.1:Data.IntMap.Internal</code>），不是本应用的问题。
+        <a
+            href="https://discourse.bazqux.com/t/server-error-message/485"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="underline hover:no-underline"
+        >查看官方报告</a>
+        ，稍后再试。
+    </p>
+    {detail && (
+        <p class="mt-1 text-xs opacity-75">错误详情：{detail}</p>
+    )}
+</div>

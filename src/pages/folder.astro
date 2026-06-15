@@ -2,11 +2,12 @@
 import Layout from '@/layouts/Layout.astro';
 import { getToken } from '@/lib/auth';
 import { loadAllUnreadCounts, loadRandomItemsForFolder } from '@/lib/data';
-import type { Item as ItemType } from '@/lib/types';
+import type { Item as ItemType, UnreadCount } from '@/lib/types';
 import Item from '@/components/Item.astro';
 import { ReloadingButton } from '@/components/ReloadingButton';
 import { ScrollToBottom } from '@/components/ScrollToBottom';
 import { AutoLoadMore } from '@/components/AutoLoadMore';
+import UpstreamError from '@/components/UpstreamError.astro';
 
 // 1. Get token and folder ID
 const token = getToken(Astro.cookies);
@@ -19,10 +20,18 @@ if (!folderId) {
 }
 
 // 2. Fetch cached random items for the folder (same behavior as the original app)
-const [cachedRandomItems, allUnreadCounts] = await Promise.all([
-    loadRandomItemsForFolder(Astro, token, folderId),
-    loadAllUnreadCounts(token),
-]);
+let cachedRandomItems: ItemType[] = [];
+let allUnreadCounts: UnreadCount[] = [];
+let upstreamError: string | undefined;
+try {
+    [cachedRandomItems, allUnreadCounts] = await Promise.all([
+        loadRandomItemsForFolder(Astro, token, folderId),
+        loadAllUnreadCounts(token),
+    ]);
+} catch (error) {
+    console.error('Failed to load folder data:', error);
+    upstreamError = error instanceof Error ? error.message : String(error);
+}
 const items: ItemType[] = cachedRandomItems.reverse();
 const folderName = folderId.replace(/.*\//g, '');
 const normalizedFolderId = folderId.replace(/\d+/, '-');
@@ -32,6 +41,11 @@ const feedUnreadCounts = new Map(allUnreadCounts.map((uc) => [uc.id, uc.count]))
 
 <Layout title={`Folder - ${folderName}`}>
     <div class="py-4 relative pb-20"> {/* Add padding-bottom for the fixed buttons */}
+        {upstreamError && (
+            <div class="mb-4">
+                <UpstreamError detail={upstreamError} />
+            </div>
+        )}
         <header class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">{folderName}</h1>
             <div class="text-lg">
