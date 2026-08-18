@@ -1,6 +1,6 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import { getToken } from '@/lib/auth';
+import { getToken, loginRedirectUrl } from '@/lib/auth';
 import { loadItem, loadFeedUnreadsCount } from '@/lib/data';
 import type { Item } from '@/lib/types';
 import { ItemActions } from '@/components/ItemActions';
@@ -9,7 +9,7 @@ import dayjs from 'dayjs';
 // 1. Get token and IDs
 const token = getToken(Astro.cookies);
 if (!token) {
-    return Astro.redirect('/login');
+    return Astro.redirect(loginRedirectUrl(Astro.url));
 }
 const itemId = Astro.url.searchParams.get('id');
 const folderId = Astro.url.searchParams.get('folderId') || undefined;

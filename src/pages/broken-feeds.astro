@@ -1,6 +1,6 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import { getToken } from '@/lib/auth';
+import { getToken, loginRedirectUrl } from '@/lib/auth';
 import { apiFetch } from '@/lib/api';
 
 const MAX_TRY = 42;
@@ -36,12 +36,11 @@ async function findBrokenFeed(token: string) {
 }
 
 const token = getToken(Astro.cookies);
-let brokenFeed = null;
-if (token) {
-    brokenFeed = await findBrokenFeed(token);
-} else {
-    return Astro.redirect('/login');
+if (!token) {
+    return Astro.redirect(loginRedirectUrl(Astro.url));
 }
+let brokenFeed = null;
+brokenFeed = await findBrokenFeed(token);
 ---
 
 <Layout title="Broken Feeds">

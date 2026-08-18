@@ -1,6 +1,6 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import { getToken } from '@/lib/auth';
+import { getToken, loginRedirectUrl } from '@/lib/auth';
 import * as data from '@/lib/data';
 import type { Folder, UnreadCount, FolderWithUnread, Item } from '@/lib/types';
 import TotalUnreads from '@/components/TotalUnreads.astro';
@@ -8,10 +8,11 @@ import FolderLink from '@/components/FolderLink.astro';
 import UpstreamError from '@/components/UpstreamError.astro';
 import { RecentlyReadItems } from '@/components/RecentlyReadItems';
 
-// 1. Check for authentication
+// 1. Check for authentication (redirect without replacing history so the
+//    original URL is preserved via `next`).
 const token = getToken(Astro.cookies);
 if (!token) {
-    return Astro.redirect('/login');
+    return Astro.redirect(loginRedirectUrl(Astro.url));
 }
 
 // 2. Fetch all necessary data in parallel; degrade gracefully if BazQux is down.

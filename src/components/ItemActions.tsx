@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
+import { redirectIfUnauthorized } from "@/lib/client-auth";
 import type { Item } from "@/lib/types";
 
 interface ItemActionsProps {
@@ -36,6 +37,8 @@ export function ItemActions({ folderId, item }: ItemActionsProps) {
         },
         body: JSON.stringify({ itemId: item.id, folderId }),
       });
+
+      if (redirectIfUnauthorized(response.status)) return;
 
       const responseText = (await response.text()).trim();
 
@@ -71,6 +74,8 @@ export function ItemActions({ folderId, item }: ItemActionsProps) {
         },
         body: JSON.stringify({ itemId: item.id, folderId }),
       });
+
+      if (redirectIfUnauthorized(response.status)) return;
 
       if (!response.ok) {
         const errorText = await response.text();

@@ -1,10 +1,18 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import { LoginForm } from '@/components/LoginForm';
+import { getToken, sanitizeNextUrl } from '@/lib/auth';
+
+const nextUrl = sanitizeNextUrl(Astro.url.searchParams.get('next')) || '/';
+
+// Already signed in — no need to show the login form.
+if (getToken(Astro.cookies)) {
+    return Astro.redirect(nextUrl);
+}
 ---
 
 <Layout title="Login">
   <main>
-    <LoginForm client:load />
+    <LoginForm client:load nextUrl={nextUrl} />
   </main>
 </Layout>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { Button } from '@/components/ui/button';
+import { redirectIfUnauthorized } from '@/lib/client-auth';
 
 interface ReloadingButtonProps {
   folderId: string;
@@ -22,6 +23,8 @@ export function ReloadingButton({ folderId, isReloading }: ReloadingButtonProps)
         },
         body: JSON.stringify({ folderId, isReloading }),
       });
+
+      if (redirectIfUnauthorized(response.status)) return;
 
       if (!response.ok) {
         const errorText = await response.text();

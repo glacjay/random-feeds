@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export function LoginForm() {
+export function LoginForm({ nextUrl = '/' }: { nextUrl?: string }) {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
@@ -29,7 +29,9 @@ export function LoginForm() {
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          window.location.href = '/';
+          // `assign` pushes a new history entry (unlike `replace`), so the
+          // user can still navigate back to the page they were viewing.
+          window.location.assign(nextUrl);
           return;
         }
       }

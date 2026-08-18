@@ -1,6 +1,6 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import { getToken } from '@/lib/auth';
+import { getToken, loginRedirectUrl } from '@/lib/auth';
 import { loadRecentlyReadItems } from '@/lib/data';
 import type { Item as ItemType } from '@/lib/types';
 import Item from '@/components/Item.astro';
@@ -9,7 +9,7 @@ import UpstreamError from '@/components/UpstreamError.astro';
 // 1. Get token and context
 const token = getToken(Astro.cookies);
 if (!token) {
-    return Astro.redirect('/login');
+    return Astro.redirect(loginRedirectUrl(Astro.url));
 }
 
 // 2. Fetch data; degrade gracefully if BazQux is down.
